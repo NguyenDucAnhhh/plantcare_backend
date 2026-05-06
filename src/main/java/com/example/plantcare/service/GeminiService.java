@@ -47,13 +47,13 @@ public class GeminiService {
     public String analyzeImage(String imageBase64, String mimeType) {
         // Cau truc JSON gui toi Gemini API (theo tai lieu chinh thuc cua Google)
         String prompt = "Bạn là một chuyên gia thực vật học và bác sĩ cây trồng. Hãy phân tích hình ảnh cây trồng được cung cấp. " +
-            "Xác định tên loài cây (tên giống/loài nếu có thể), xác định xem cây có đang mắc bệnh hay gặp vấn đề sức khỏe nào không, " +
-            "đưa ra phương pháp điều trị đề xuất, và cho biết mức độ tin cậy của bạn (Cao, Trung bình, Thấp). " +
-            "Bạn BẮT BUỘC phải trả về kết quả CHÍNH XÁC dưới dạng một đối tượng JSON, không kèm theo bất kỳ văn bản thừa hay định dạng markdown nào. " +
-            "Chuỗi JSON phải có chính xác các khóa (keys) sau: 'plantName', 'diseaseName', 'cause', 'treatment', 'confidence'. " +
-            "Nếu hình ảnh không phải là thực vật, hãy trả về 'Unknown' cho 'plantName' và giải thích lý do trong 'diseaseName'. " +
-            "Nếu cây hoàn toàn khỏe mạnh, hãy điền 'None' hoặc 'Healthy' vào 'diseaseName'. Phần 'treatment' (cách chữa trị) cần rõ ràng và súc tích. " +
-            "Lưu ý: Đối với 'confidence', hãy trả về một con số từ 0 đến 100 (ví dụ: 85.0). Đối với 'cause', hãy nêu ngắn gọn nguyên nhân gây bệnh.";
+                "Xác định tên loài cây (tên giống/loài nếu có thể), xác định xem cây có đang mắc bệnh hay gặp vấn đề sức khỏe nào không, " +
+                "đưa ra phương pháp điều trị đề xuất, và cho biết mức độ tin cậy của bạn (Cao, Trung bình, Thấp). " +
+                "Bạn BẮT BUỘC phải trả về kết quả CHÍNH XÁC dưới dạng một đối tượng JSON, không kèm theo bất kỳ văn bản thừa hay định dạng markdown nào. " +
+                "Chuỗi JSON phải có chính xác các khóa (keys) sau: 'plantName', 'diseaseName', 'cause', 'treatment', 'confidence'. " +
+                "Nếu hình ảnh không phải là thực vật, hãy trả về 'Unknown' cho 'plantName' và giải thích lý do trong 'diseaseName'. " +
+                "Nếu cây hoàn toàn khỏe mạnh, hãy điền 'None' hoặc 'Healthy' vào 'diseaseName'. Phần 'treatment' (cách chữa trị) cần rõ ràng và súc tích. " +
+                "Lưu ý: Đối với 'confidence', hãy trả về một con số từ 0 đến 100 (ví dụ: 85.0). Đối với 'cause', hãy nêu ngắn gọn nguyên nhân gây bệnh.";
 
         Map<String, Object> requestBody = Map.of(
                 "contents", List.of(Map.of(
@@ -86,9 +86,18 @@ public class GeminiService {
 
             return (String) firstPart.get("text");
 
-        } catch (Exception e) {
-            log.error("[Gemini] Loi goi API: {}", e.getMessage());
-            return "Khong the phan tich anh luc nay. Vui long thu lai sau.";
-        }
+//        } catch (Exception e) {
+//            return "Khong the phan tich anh luc nay. Vui long thu lai sau.";
+//        }
+        }catch (Exception e) {
+        log.error("[Gemini] Loi goi API: {}", e.getMessage());
+        // PHẢI TRẢ VỀ JSON ĐỂ CONTROLLER KHÔNG BỊ CRASH
+        return "{" +
+                "\"tenBenh\": \"Lỗi hệ thống\"," +
+                "\"nguyenNhan\": \"Không thể kết nối với AI (" + e.getMessage() + ")\"," +
+                "\"cachChua\": \"Vui lòng kiểm tra lại hình ảnh hoặc thử lại sau.\"," +
+                "\"doTinCay\": \"0%\"" +
+                "}";
+    }
     }
 }

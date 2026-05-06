@@ -33,6 +33,7 @@ public class DiagnosisHistoryServiceImpl implements DiagnosisHistoryService {
         DiagnosisHistory history = DiagnosisHistory.builder()
                 .user(user)
                 .imageUrl(request.getImageUrl())
+                .plantName(request.getPlantName())
                 .diseaseName(request.getDiseaseName())
                 .cause(request.getCause())
                 .treatment(request.getTreatment())

@@ -12,6 +12,7 @@ public class GardenResponse {
     private String location;
     private String description;
     private String imageUrl;
+    private int plantCount;
 
     public static GardenResponse fromEntity(Garden garden) {
         return GardenResponse.builder()
@@ -20,6 +21,7 @@ public class GardenResponse {
                 .location(garden.getLocation())
                 .description(garden.getDescription())
                 .imageUrl(garden.getImageUrl())
+                .plantCount(garden.getPlants() != null ? garden.getPlants().size() : 0)
                 .build();
     }
 }

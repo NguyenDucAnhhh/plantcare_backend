@@ -44,7 +44,7 @@ public class GardenServiceImpl implements GardenService {
                 .name(request.getName())
                 .description(request.getDescription())
                 .imageUrl(request.getImageUrl())
-                // .location(request.getLocation()) // Wait, V1 GardenRequest didn't have location? Actually it did or didn't. We'll ignore location if it's missing in request, or set null.
+                .location(request.getLocation())
                 .user(owner)
                 .build();
 
@@ -67,6 +67,7 @@ public class GardenServiceImpl implements GardenService {
         Garden garden = getMyGardenById(gardenId, owner);
 
         if (request.getName() != null) garden.setName(request.getName());
+        if (request.getLocation() != null) garden.setLocation(request.getLocation());
         if (request.getDescription() != null) garden.setDescription(request.getDescription());
         if (request.getImageUrl() != null) garden.setImageUrl(request.getImageUrl());
 
