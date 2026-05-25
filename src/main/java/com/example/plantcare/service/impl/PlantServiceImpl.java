@@ -58,7 +58,7 @@ public class PlantServiceImpl implements PlantService {
                 .species(request.getSpecies())
                 .description(request.getDescription())
                 .imageUrl(request.getImageUrl())
-                .datePlanted(LocalDate.now())
+                .datePlanted(request.getDatePlanted() != null ? request.getDatePlanted() : LocalDate.now())
                 .garden(garden)
                 .build();
 
@@ -85,7 +85,17 @@ public class PlantServiceImpl implements PlantService {
         if (request.getSpecies() != null) plant.setSpecies(request.getSpecies());
         if (request.getDescription() != null) plant.setDescription(request.getDescription());
         if (request.getImageUrl() != null) plant.setImageUrl(request.getImageUrl());
+        if (request.getDatePlanted() != null) plant.setDatePlanted(request.getDatePlanted());
 
+        return PlantResponse.fromEntity(plantRepository.save(plant));
+    }
+
+    @Override
+    public PlantResponse movePlant(Long plantId, Long targetGardenId, String email) {
+        User owner = getUserByEmail(email);
+        Plant plant = getMyPlantById(plantId, owner);
+        Garden targetGarden = getMyGardenById(targetGardenId, owner);
+        plant.setGarden(targetGarden);
         return PlantResponse.fromEntity(plantRepository.save(plant));
     }
 

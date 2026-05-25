@@ -18,25 +18,25 @@ public class Plant {
     private Long id;
 
     @Column(nullable = false)
-    private String name; // TÃªn Ä‘á»‹nh danh do ngÆ°á»i dÃ¹ng tá»± Ä‘áº·t (CÃ¢y hoa há»“ng ngoáº¡i)
+    private String name; // Tên định danh do người dùng tự đặt (Cây hoa hồng ngoại)
 
-    private String species; // LoÃ i sinh há»c (Rosa)
+    private String species; // Loài sinh học (Rosa)
 
     @Column(columnDefinition = "TEXT")
-    private String description; // MÃ´ táº£ quÃ¡ trÃ¬nh lá»›n lÃªn cá»§a cÃ¢y
+    private String description; // Mô tả quá trình lớn lên của cây
 
-    private String imageUrl; // Chá»©a link URL cá»§a Amazon S3/Cloudinary
+    private String imageUrl; // Chứa link URL của Amazon S3/Cloudinary
 
-    private LocalDate datePlanted; // TÃ­ch chá»n ngÃ y gieo háº¡t / trá»“ng vÃ o cháº­u
+    private LocalDate datePlanted; // Tích chọn ngày gieo hạt / trồng vào chậu
 
-    // Má»‘i quan há»‡ MANY_TO_ONE: Má»™t CÃ¢y báº¯t buá»™c pháº£i Ä‘Æ°á»£c Ä‘áº·t trong 1 VÆ°á»n
+    // Mối quan hệ MANY_TO_ONE: Một Cây bắt buộc phải được đặt trong 1 Vườn
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "garden_id", nullable = false)
     @ToString.Exclude
     private Garden garden;
 
-    // Äáº¶C Táº¢ "XÃ“A CÃ‚Y LÃ€ XÃ“A LUÃ”N Lá»ŠCH TRÃŒNH": 
-    // RÃ ng buá»™c Cascade Delete Ä‘áº£m báº£o DB triá»‡t tiÃªu toÃ n bá»™ thÆ° má»¥c Reminder bÃªn trong khi CÃ¢y bá»‹ Tráº£m.
+    // ĐẶC TẢ "XÓA CÂY LÀ XÓA LUÔN LỊCH TRÌNH": 
+    // Ràng buộc Cascade Delete đảm bảo DB triệt tiêu toàn bộ thư mục Reminder bên trong khi Cây bị Trảm.
     @OneToMany(mappedBy = "plant", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private java.util.List<Reminder> reminders = new java.util.ArrayList<>();

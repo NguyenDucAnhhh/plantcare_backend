@@ -56,12 +56,23 @@ public class ReminderServiceImpl implements ReminderService {
         Reminder newReminder = Reminder.builder()
                 .type(ReminderType.valueOf(request.getType().toUpperCase()))
                 .triggerTime(request.getTriggerTime())
+                .lastPerformed(request.getLastPerformed())
                 .repeatDays(request.getRepeatDays())
                 .isActive(true) // Luôn bật khi mới tạo
                 .plant(plant)
                 .build();
 
         return ReminderResponse.fromEntity(reminderRepository.save(newReminder));
+    }
+
+    @Override
+    public List<ReminderResponse> getRemindersByGarden(Long gardenId, String email) {
+        User owner = getUserByEmail(email);
+        return reminderRepository.findByPlant_Garden_Id(gardenId)
+                .stream()
+                .filter(r -> r.getPlant().getGarden().getUser().getId().equals(owner.getId()))
+                .map(ReminderResponse::fromEntity)
+                .collect(java.util.stream.Collectors.toList());
     }
 
     @Override
@@ -83,6 +94,7 @@ public class ReminderServiceImpl implements ReminderService {
         if (request.getType() != null) reminder.setType(ReminderType.valueOf(request.getType().toUpperCase()));
         if (request.getTriggerTime() != null) reminder.setTriggerTime(request.getTriggerTime());
         if (request.getRepeatDays() != null) reminder.setRepeatDays(request.getRepeatDays());
+        if (request.getLastPerformed() != null) reminder.setLastPerformed(request.getLastPerformed());
 
         return ReminderResponse.fromEntity(reminderRepository.save(reminder));
     }

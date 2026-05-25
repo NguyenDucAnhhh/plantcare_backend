@@ -1,6 +1,8 @@
 package com.example.plantcare.controller;
 
 import com.example.plantcare.dto.response.UserProfileResponse;
+import com.example.plantcare.dto.request.NotificationSettingsRequest;
+import com.example.plantcare.dto.request.ChangePasswordRequest;
 import com.example.plantcare.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,8 +29,9 @@ public class UserController {
 
     @Operation(summary = "Xem hồ sơ của người khác")
     @GetMapping("/{userId}")
-    public ResponseEntity<UserProfileResponse> getUserProfileById(@PathVariable Long userId) {
-        return ResponseEntity.ok(userService.getUserProfileById(userId));
+    public ResponseEntity<UserProfileResponse> getUserProfileById(@PathVariable Long userId, Authentication authentication) {
+        String email = authentication != null ? authentication.getName() : null;
+        return ResponseEntity.ok(userService.getUserProfileById(userId, email));
     }
 
     @Operation(summary = "Cập nhật hồ sơ cá nhân")
@@ -64,5 +67,26 @@ public class UserController {
     @GetMapping("/me/following")
     public ResponseEntity<List<UserProfileResponse>> getMyFollowings(Authentication authentication) {
         return ResponseEntity.ok(userService.getMyFollowings(authentication.getName()));
+    }
+
+    @Operation(summary = "Cap nhat FCM Token cua thiet bi")
+    @PutMapping("/fcm-token")
+    public ResponseEntity<Void> updateFcmToken(
+            @RequestBody java.util.Map<String, String> body,
+            Authentication authentication) {
+        String fcmToken = body.get("fcmToken");
+        if (fcmToken != null && !fcmToken.isBlank()) {
+            userService.updateFcmToken(authentication.getName(), fcmToken);
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "Thay doi mat khau")
+    @PutMapping("/me/change-password")
+    public ResponseEntity<Void> changePassword(
+            @RequestBody ChangePasswordRequest request,
+            Authentication authentication) {
+        userService.changePassword(authentication.getName(), request);
+        return ResponseEntity.ok().build();
     }
 }

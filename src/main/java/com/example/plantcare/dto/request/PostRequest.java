@@ -3,5 +3,5 @@ import lombok.Data;
 @Data
 public class PostRequest {
     private String content;
-    private String imageUrl;
+    private java.util.List<String> imageUrls;
 }

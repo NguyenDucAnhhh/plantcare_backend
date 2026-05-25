@@ -20,27 +20,27 @@ public class Comment {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    // Gáº¯n vÃ o BÃ i Post nÃ o?
+    // Gắn vào Bài Post nào?
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
     @ToString.Exclude
     private Post post;
 
-    // Ai lÃ  ngÆ°á»i mÃºa phÃ­m (TÃ¡c giáº£ cmt)?
+    // Ai là người múa phím (Tác giả cmt)?
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @ToString.Exclude
     private User author;
 
-    // Há»– TRá»¢ TRáº¢ Lá»œI BÃŒNH LUáº¬N (Nested Comments/Replies):
-    // Báº£n thÃ¢n nÃ³ cÅ©ng cÃ³ thá»ƒ chá»©a 1 tháº» cáº¯m vÃ o 1 BÃ¬nh luáº­n Gá»‘c 
-    // (Náº¿u nÃ³ mang giÃ¡ trá»‹ Null thÃ¬ Ä‘Ã¢y lÃ  BÃ¬nh luáº­n ná»•i cáº¥p 1)
+    // HỖ TRỢ TRẢ LỜI BÌNH LUẬN (Nested Comments/Replies):
+    // Bản thân nó cũng có thể chứa 1 thẻ cắm vào 1 Bình luận Gốc 
+    // (Nếu nó mang giá trị Null thì đây là Bình luận nổi cấp 1)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_comment_id")
     @ToString.Exclude
     private Comment parentComment;
 
-    // VÃ€ Má»˜T BÃŒNH LUáº¬N Gá»C CÃ“ THá»‚ CHá»¨A VÃ” Sá» BÃŒNH LUáº¬N TRáº¢ Lá»œI THáº¾ Há»† CON:
+    // VÀ MỘT BÌNH LUẬN GỐC CÓ THỂ CHỨA VÔ SỐ BÌNH LUẬN TRẢ LỜI THẾ HỆ CON:
     @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private java.util.List<Comment> replies = new java.util.ArrayList<>();

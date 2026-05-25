@@ -28,36 +28,36 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // Táº¯t cÆ¡ cháº¿ lá»«a Ä‘áº£o Session Ä‘Ã­nh kÃ¨m áº£o cáº¥m Hack CSRF (Giá»¯ láº¡i Code lÃµi Token Tháº­t)
+            // Tắt cơ chế lừa đảo Session đính kèm ảo cấm Hack CSRF (Giữ lại Code lõi Token Thật)
             .csrf(AbstractHttpConfigurer::disable)
             
             // Bat CORS voi cau hinh ben duoi
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             
-            // LUáº¬T Lá»† PHÃ‚N LÃ” Ä áº¤T Ná»€N: PHÃ‚N QUYá»€N TRUY Cáº¬P (Route Roles)
+            // LUẬT LỆ PHÂN LÔ � ẤT NỀN: PHÂN QUYỀN TRUY CẬP (Route Roles)
             .authorizeHttpRequests(auth -> auth
                 
-                // Má»ž CHá» T (PermitAll): Tráº¡m xÄƒng cÃ´ng cá»™ng, ai cháº£ cáº§n ghÃ© -> Má»Ÿ Sáº£nh Login vÃ  Register
+                // MỞ CH� T (PermitAll): Trạm xăng công cộng, ai chả cần ghé -> Mở Sảnh Login và Register
                 .requestMatchers("/api/auth/**").permitAll() 
                 
-                // Má»ž Cửa Cho Giao diện Tài Liệu Khách (Swagger UI)
+                // MỞ Cửa Cho Giao diện T�i Liệu Kh�ch (Swagger UI)
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/swagger-ui.html").permitAll()
                 
-                // VÃ™NG Cáº¤M Ä á»ŠA BAY (HAS_ROLE ADMIN): Chá»‰ ChÃºa Tá»ƒ má»›i Ä‘Æ°á»£c mÃ² máº«m vÃ o (VÃ­ dá»¥ URL giÃ¡m sÃ¡t AI)
+                // VÙNG CẤM � ỊA BAY (HAS_ROLE ADMIN): Chỉ Chúa Tể mới được mò mẫm vào (Ví dụ URL giám sát AI)
                 .requestMatchers("/api/admin/**").hasRole("ADMIN") 
                 
-                // Táº¥t cáº£ nhá»¯ng chá»— káº½ há»Ÿ khÃ¡c trong lÃ¢u Ä‘Ã i CÃ¢y Cáº£nh (VÆ°á» n, CÃ¢y, BÃ i Ä‘Äƒng...) 
-                // Báº®T BUá»˜C Pháº£i xuáº¥t trÃ¬nh CÄƒn CÆ°á»›c JWT quáº¹t tháº»!
+                // Tất cả những chỗ kẽ hở khác trong lâu đài Cây Cảnh (Vư� n, Cây, Bài đăng...) 
+                // BẮT BUỘC Phải xuất trình Căn Cước JWT quẹt thẻ!
                 .anyRequest().authenticated() 
             )
             
-            // Láº¬P Lá»œI NGuyá» n Phi Tráº¡ng ThÃ¡i (Stateless): Server láº¥p nÃ£o pháº³ng, KhÃ´ng nhá»› Session cÅ©
+            // LẬP LỜI NGuy� n Phi Trạng Thái (Stateless): Server lấp não phẳng, Không nhớ Session cũ
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             
-            // Ã‰P GIAO Ná»˜P RÃ€O CHáº®N
+            // ÉP GIAO NỘP RÀO CHẮN
             .authenticationProvider(authenticationProvider)
             
-            // QuÄƒng TÃªn LÃ­nh GÃ¡c Báº£o Vá»‡ (jwtAuthFilter) Ra Ä á»©ng Che Ngay Luá»“ng Cháº¡y Ä áº§u TiÃµn PhÃ­a MÃ´n Quan
+            // Quăng Tên Lính Gác Bảo Vệ (jwtAuthFilter) Ra � ứng Che Ngay Luồng Chạy � ầu Tiõn Phía Môn Quan
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

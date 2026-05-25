@@ -10,4 +10,5 @@ public interface PlantService {
     List<PlantResponse> getPlantsByGarden(Long gardenId, String email);
     PlantResponse updatePlant(Long plantId, PlantRequest request, String email);
     void deletePlant(Long plantId, String email);
+    PlantResponse movePlant(Long plantId, Long targetGardenId, String email);
 }

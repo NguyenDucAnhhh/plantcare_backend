@@ -3,6 +3,6 @@ import lombok.Data;
 @Data
 public class CareTipRequest {
     private String title;
-    private String content; // NÃ¡Â»â„¢t dung (KhÃƒÂ´ng bÃ¡ÂºÂ¯t buÃ¡Â»â„¢c)
-    private String imageUrl; // BÃ¡ÂºÂ¯t buÃ¡Â»â„¢c D-2
+    private String content; // Nột dung (Kh�ng bắt buộc)
+    private String imageUrl; // Bắt buộc D-2
 }

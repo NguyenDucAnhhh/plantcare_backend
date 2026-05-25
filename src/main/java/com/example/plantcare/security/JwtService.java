@@ -17,15 +17,15 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    // Náº¯p láº¥y máº­t mÃ£ bÃ­ máº­t tá»« file application.properties
+    // Nắp lấy mật mã bí mật từ file application.properties
     @Value("${jwt.secret}")
     private String secretKey;
 
-    // Láº¥y thá»i háº¡n sá»‘ng cá»§a tháº» JWT (Máº·c Ä‘á»‹nh 1 ngÃ y)
+    // Lấy thời hạn sống của thẻ JWT (Mặc định 1 ngày)
     @Value("${jwt.expiration}")
     private long jwtExpiration;
 
-    // NÄ‚NG Lá»°C 1: RÃšT TRÃCH LÃ•I THáºº (Ai lÃ  ngÆ°á»i mang tháº» nÃ y?)
+    // NĂNG LỰC 1: RÚT TRÍCH LÕI THẺ (Ai là người mang thẻ này?)
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -35,8 +35,8 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    // NÄ‚NG Lá»°C 2: MÃY IN THáºº Má»šI 
-    // (ÄÆ°á»£c gá»i khi ÄÄƒng nháº­p Ä‘Ãºng Email/Password)
+    // NĂNG LỰC 2: MÁY IN THẺ MỚI 
+    // (Được gọi khi Đăng nhập đúng Email/Password)
     public String generateToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails);
     }
@@ -44,17 +44,17 @@ public class JwtService {
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts.builder()
                 .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername()) // Äá»‹nh danh gá»‘c: Email
-                .setIssuedAt(new Date(System.currentTimeMillis())) // Giá» ráº­p khuÃ´n
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration)) // Giá» Tháº» hÃ³a RÃ¡c
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256) // ÄÃ³ng dáº¥u phÃ¡p lÃ½ báº±ng Key
+                .setSubject(userDetails.getUsername()) // Định danh gốc: Email
+                .setIssuedAt(new Date(System.currentTimeMillis())) // Giờ rập khuôn
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration)) // Giờ Thẻ hóa Rác
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256) // Đóng dấu pháp lý bằng Key
                 .compact();
     }
 
-    // NÄ‚NG Lá»°C 3: MÃY KIá»‚M Äá»ŠNH THáºº GIáº¢ - THáºº THáº¬T (Validate)
+    // NĂNG LỰC 3: MÁY KIỂM ĐỊNH THẺ GIẢ - THẺ THẬT (Validate)
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
-        // TrÃ¹ng ID ngÆ°á»i dÃ¹ng vÃ  ChÆ°a háº¿t háº¡n thÃ¬ lÃ  Äá»“ Tháº­t!
+        // Trùng ID người dùng và Chưa hết hạn thì là Đồ Thật!
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
@@ -66,7 +66,7 @@ public class JwtService {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    // Dao cáº¡o lÃµi chuá»—i Token
+    // Dao cạo lõi chuỗi Token
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSignInKey())
@@ -75,7 +75,7 @@ public class JwtService {
                 .getBody();
     }
 
-    // Bá»™ phÃ¢n giáº£i Key 256 bits siÃªu báº£o máº­t
+    // Bộ phân giải Key 256 bits siêu bảo mật
     private Key getSignInKey() {
         byte[] keyBytes = io.jsonwebtoken.io.Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);

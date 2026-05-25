@@ -31,8 +31,9 @@ public class CommentController {
 
     @Operation(summary = "Lấy toàn bộ bình luận của 1 bài viết")
     @GetMapping
-    public ResponseEntity<List<CommentResponse>> getCommentsByPost(@PathVariable Long postId) {
-        return ResponseEntity.ok(commentService.getCommentsByPost(postId));
+    public ResponseEntity<List<CommentResponse>> getCommentsByPost(@PathVariable Long postId, Authentication authentication) {
+        String email = authentication != null ? authentication.getName() : null;
+        return ResponseEntity.ok(commentService.getCommentsByPost(postId, email));
     }
 
     @Operation(summary = "Xóa bình luận")

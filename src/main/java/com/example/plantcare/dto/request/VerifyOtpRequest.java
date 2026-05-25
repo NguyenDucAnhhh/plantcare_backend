@@ -1,6 +1,7 @@
 package com.example.plantcare.dto.request;
 import lombok.Data;
 @Data
-public class ForgotPasswordRequest {
+public class VerifyOtpRequest {
     private String email;
+    private String otp;
 }

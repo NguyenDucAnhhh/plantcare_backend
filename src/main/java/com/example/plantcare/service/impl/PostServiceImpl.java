@@ -10,6 +10,7 @@ import com.example.plantcare.repository.UserRepository;
 import com.example.plantcare.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,10 +21,20 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final com.example.plantcare.repository.LikeActionRepository likeActionRepository;
 
     private User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Tài khoản không tồn tại!"));
+    }
+
+    private PostResponse mapToResponse(Post post, String currentUserEmail) {
+        PostResponse response = PostResponse.fromEntity(post);
+        if (currentUserEmail != null) {
+            response.setMine(post.getAuthor().getEmail().equals(currentUserEmail));
+            response.setLiked(likeActionRepository.existsByUser_EmailAndPost(currentUserEmail, post));
+        }
+        return response;
     }
 
     @Override
@@ -32,20 +43,31 @@ public class PostServiceImpl implements PostService {
 
         Post newPost = Post.builder()
                 .content(request.getContent())
-                .imageUrl(request.getImageUrl())
+                .imageUrls(request.getImageUrls() != null ? request.getImageUrls() : new java.util.ArrayList<>())
                 .author(author)
                 .isVisible(true)
                 .likeCount(0)
                 .build();
 
-        return PostResponse.fromEntity(postRepository.save(newPost));
+        return mapToResponse(postRepository.save(newPost), email);
     }
 
     @Override
-    public List<PostResponse> getAllVisiblePosts() {
+    public List<PostResponse> getAllVisiblePosts(String currentUserEmail) {
         return postRepository.findAll().stream()
                 .filter(Post::isVisible)
-                .map(PostResponse::fromEntity)
+                .map(post -> mapToResponse(post, currentUserEmail))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PostResponse> getFollowingPosts(String email) {
+        User user = getUserByEmail(email);
+        List<Long> followingIds = user.getFollowing().stream().map(User::getId).collect(Collectors.toList());
+        if (followingIds.isEmpty()) return List.of();
+        return postRepository.findByAuthorIdInOrderByCreatedAtDesc(followingIds).stream()
+                .filter(Post::isVisible)
+                .map(post -> mapToResponse(post, email))
                 .collect(Collectors.toList());
     }
 
@@ -54,18 +76,18 @@ public class PostServiceImpl implements PostService {
         User author = getUserByEmail(email);
         return postRepository.findByAuthorIdOrderByCreatedAtDesc(author.getId()).stream()
                 .filter(Post::isVisible)
-                .map(PostResponse::fromEntity)
+                .map(post -> mapToResponse(post, email))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public PostResponse getPostById(Long postId) {
+    public PostResponse getPostById(Long postId, String currentUserEmail) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy bài viết!"));
         if (!post.isVisible()) {
-            throw new RuntimeException("Bài viết đã bị ẩn hoặc xóa!");
+            throw new RuntimeException("Bài viết đã bị ẩn!");
         }
-        return PostResponse.fromEntity(post);
+        return mapToResponse(post, currentUserEmail);
     }
 
     @Override
@@ -79,9 +101,9 @@ public class PostServiceImpl implements PostService {
         }
 
         if (request.getContent() != null) post.setContent(request.getContent());
-        if (request.getImageUrl() != null) post.setImageUrl(request.getImageUrl());
+        if (request.getImageUrls() != null) post.setImageUrls(request.getImageUrls());
 
-        return PostResponse.fromEntity(postRepository.save(post));
+        return mapToResponse(postRepository.save(post), email);
     }
 
     @Override
@@ -94,8 +116,6 @@ public class PostServiceImpl implements PostService {
             throw new RuntimeException("Bạn không có quyền xóa bài viết của người khác!");
         }
 
-        // Thay vì xóa cứng khỏi DB (mất dữ liệu report), ta đánh cờ ẩn nó đi. Hoặc xóa thẳng nếu app cần giải phóng dung lượng.
-        // Ở đây thực hiện Xóa thẳng theo Cascade.
         postRepository.delete(post);
     }
 }

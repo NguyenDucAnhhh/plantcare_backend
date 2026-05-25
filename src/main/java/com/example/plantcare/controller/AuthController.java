@@ -2,6 +2,9 @@ package com.example.plantcare.controller;
 
 import com.example.plantcare.dto.request.AuthRequest;
 import com.example.plantcare.dto.request.RegisterRequest;
+import com.example.plantcare.dto.request.ForgotPasswordRequest;
+import com.example.plantcare.dto.request.VerifyOtpRequest;
+import com.example.plantcare.dto.request.ResetPasswordRequest;
 import com.example.plantcare.dto.response.AuthResponse;
 import com.example.plantcare.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -27,5 +30,23 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
         return ResponseEntity.ok(authService.login(request));
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<java.util.Map<String, String>> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        authService.forgotPassword(request);
+        return ResponseEntity.ok(java.util.Map.of("message", "OTP đã được gửi đến email của bạn!"));
+    }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<java.util.Map<String, String>> verifyOtp(@RequestBody VerifyOtpRequest request) {
+        authService.verifyOtp(request);
+        return ResponseEntity.ok(java.util.Map.of("message", "OTP hợp lệ!"));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<java.util.Map<String, String>> resetPassword(@RequestBody ResetPasswordRequest request) {
+        authService.resetPassword(request);
+        return ResponseEntity.ok(java.util.Map.of("message", "Đặt lại mật khẩu thành công!"));
     }
 }

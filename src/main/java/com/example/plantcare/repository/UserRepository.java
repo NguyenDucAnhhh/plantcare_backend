@@ -6,11 +6,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
-// Háº§m ngáº§m Data khai thÃ¡c riÃªng cho cÃ¡i Báº£ng Users
-// Viá»‡c Extend `JpaRepository` giÃºp láº¥y luÃ´n máº¥y hÃ m CRUD (Save, Find, Delete) cÃ³ sáºµn cá»§a CSDl
+// Hầm ngầm Data khai thác riêng cho cái Bảng Users
+// Việc Extend `JpaRepository` giúp lấy luôn mấy hàm CRUD (Save, Find, Delete) có sẵn của CSDl
 public interface UserRepository extends JpaRepository<User, Long> {
     
-    // CÃ¢u lá»‡nh SQL tÃ ng hÃ¬nh: SELECT * FROM Users WHERE email = ?
+    // Câu lệnh SQL tàng hình: SELECT * FROM Users WHERE email = ?
     Optional<User> findByEmail(String email);
 
     @Query("SELECT COUNT(u) FROM User u JOIN u.following f WHERE f.id = :userId")

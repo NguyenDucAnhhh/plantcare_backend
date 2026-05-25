@@ -12,6 +12,13 @@ import com.example.plantcare.repository.UserRepository;
 import com.example.plantcare.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import com.example.plantcare.model.Notification;
+import com.example.plantcare.repository.NotificationRepository;
+import com.example.plantcare.service.FirebasePushService;
+import com.example.plantcare.model.NotificationType;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,7 +29,9 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
+    private final FirebasePushService firebasePushService;
     private final UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
 
     private User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
@@ -47,17 +56,65 @@ public class CommentServiceImpl implements CommentService {
                 .author(author)
                 .parentComment(parentComment)
                 .build();
+        
+        Comment savedComment = commentRepository.save(newComment);
 
-        return CommentResponse.fromEntity(commentRepository.save(newComment));
+        // GUI THONG BAO
+        Set<Long> notifiedUserIds = new HashSet<>();
+        notifiedUserIds.add(author.getId()); // Khong gui thong bao cho chinh minh
+
+        // 1. Thong bao cho chu bai dang
+        User postAuthor = post.getAuthor();
+        if (!notifiedUserIds.contains(postAuthor.getId())) {
+            String title = "Bình luận mới trên bài viết của bạn!";
+            String body = author.getFullName() + " đã bình luận: " + request.getContent();
+            
+            Notification notif = Notification.builder()
+                    .title(title)
+                    .message(body)
+                    .type(NotificationType.COMMUNITY.name())
+                    .recipient(postAuthor)
+                    .targetId(post.getId())
+                    .createdAt(LocalDateTime.now())
+                    .isRead(false)
+                    .build();
+            notificationRepository.save(notif);
+            firebasePushService.sendPushNotification(postAuthor, NotificationType.COMMUNITY, title, body);
+            
+            notifiedUserIds.add(postAuthor.getId());
+        }
+
+        // 2. Thong bao cho nguoi duoc reply (Neu co)
+        if (parentComment != null) {
+            User parentCommentAuthor = parentComment.getAuthor();
+            if (!notifiedUserIds.contains(parentCommentAuthor.getId())) {
+                String title = "Có người trả lời bình luận của bạn!";
+                String body = author.getFullName() + " đã trả lời: " + request.getContent();
+                
+                Notification notif = Notification.builder()
+                        .title(title)
+                        .message(body)
+                        .type(NotificationType.COMMUNITY.name())
+                        .recipient(parentCommentAuthor)
+                        .targetId(post.getId())
+                        .createdAt(LocalDateTime.now())
+                        .isRead(false)
+                        .build();
+                notificationRepository.save(notif);
+                firebasePushService.sendPushNotification(parentCommentAuthor, NotificationType.COMMUNITY, title, body);
+            }
+        }
+
+        return CommentResponse.fromEntity(savedComment, email);
     }
 
     @Override
-    public List<CommentResponse> getCommentsByPost(Long postId) {
+    public List<CommentResponse> getCommentsByPost(Long postId, String currentUserEmail) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Bài viết không tồn tại!"));
 
         return post.getComments().stream()
-                .map(CommentResponse::fromEntity)
+                .map(c -> CommentResponse.fromEntity(c, currentUserEmail))
                 .collect(Collectors.toList());
     }
 

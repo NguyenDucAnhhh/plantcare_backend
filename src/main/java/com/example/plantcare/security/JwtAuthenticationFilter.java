@@ -23,7 +23,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
-    // HÃ€M Báº®T GIá»® DO-FILTER: Má»ŒI REQUEST ÄI Tá»ª APP Äá»€U PHáº¢I CHáº¢Y QUA ÄÃ‚Y Äá»‚ KIá»‚M TRA HÃ€NH LÃ
+    // HÀM BẮT GIỮ DO-FILTER: MỌI REQUEST ĐI TỪ APP ĐỀU PHẢI CHẢY QUA ĐÂY ĐỂ KIỂM TRA HÀNH LÝ
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
@@ -31,45 +31,45 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
-        // 1. Váº¡ch HÃ nh LÃ½ ra xem cÃ³ tá» giáº¥y khai bÃ¡o Authorization khÃ´ng?
+        // 1. Vạch Hành Lý ra xem có tờ giấy khai báo Authorization không?
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userEmail;
 
-        // Náº¿u KhÃ´ng cÃ³ (DÃ¢n Ä‘en Ä‘ang Ä‘á»©ng ngÃ³) -> Äuá»•i Ä‘i sang cá»­a khÃ¡c (ChÃ­nh lÃ  cá»•ng Login/ÄÄƒng kÃ½)
+        // Nếu Không có (Dân đen đang đứng ngó) -> Đuổi đi sang cửa khác (Chính là cổng Login/Đăng ký)
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 2. KhÃ¡ch CÃ³ chÃ¬a Cuá»‘n chiáº¿u Tháº» Bearer JWT ra
-        jwt = authHeader.substring(7); // DÃ¹ng kÃ©o cáº¯t bá» 7 chá»¯ "Bearer " á»Ÿ Ä‘áº§u cÃ¢u, chá»‰ láº¥y lÃµi MÃ£ code
-        userEmail = jwtService.extractUsername(jwt); // ÄÆ°a lÃµi mÃ£ cho MÃ¡y Äá»c Tháº» xem lÃ  Cá»§a Ai?
+        // 2. Khách Có chìa Cuốn chiếu Thẻ Bearer JWT ra
+        jwt = authHeader.substring(7); // Dùng kéo cắt bỏ 7 chữ "Bearer " ở đầu câu, chỉ lấy lõi Mã code
+        userEmail = jwtService.extractUsername(jwt); // Đưa lõi mã cho Máy Đọc Thẻ xem là Của Ai?
 
-        // 3. KIá»‚M THá»°C THáºº VÃ€ NHáº¤N NÃšT Má»ž Cá»¬A CHO QUA
-        // Náº¿u soi ra Email vÃ  TrÆ°á»›c Ä‘Ã¢y tháº±ng nÃ y chÆ°a Ä‘Æ°á»£c gáº¯n biá»ƒn Passed bao giá»
+        // 3. KIỂM THỰC THẺ VÀ NHẤN NÚT MỞ CỬA CHO QUA
+        // Nếu soi ra Email và Trước đây thằng này chưa được gắn biển Passed bao giờ
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             
-            // Tá»« cÃ¡i Email bá»‹ moi ra, MÃ² xuá»‘ng Database ngáº§m (PostgreSQL) lÃ´i Tháº» CÄƒn CÆ°á»›c cá»§a nÃ³ lÃªn mÃ¢m!
+            // Từ cái Email bị moi ra, Mò xuống Database ngầm (PostgreSQL) lôi Thẻ Căn Cước của nó lên mâm!
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
-            // Bá» vÃ´ MÃ¡y Quáº¹t Tháº» Ä‘á»‘i chiáº¿u
+            // Bỏ vô Máy Quẹt Thẻ đối chiếu
             if (jwtService.isTokenValid(jwt, userDetails)) {
-                // Tháº» MÃ€U XANH, NgÆ°á»i Tháº­t Tháº» Tháº­t -> TÃ­ch V Má»Ÿ Cá»•ng gÃ¡c Barie cáº¥p quyá»n cháº¡y tháº³ng vÃ o DB Controller
+                // Thẻ MÀU XANH, Người Thật Thẻ Thật -> Tích V Mở Cổng gác Barie cấp quyền chạy thẳng vào DB Controller
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
-                        userDetails.getAuthorities() // MÃ³c cÃ¡i tá» RÃ´le (CÃ¡n Bá»™ hay KhÃ¡ch bÃ´) Ä‘Ã­nh lÃªn Ã¡o nÃ³ luÃ´n trÆ°á»›c khi cho nÃ³ Ä‘i vÃ o sáº£nh
+                        userDetails.getAuthorities() // Móc cái tờ Rôle (Cán Bộ hay Khách bô) đính lên áo nó luôn trước khi cho nó đi vào sảnh
                 );
                 authToken.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request)
                 );
-                // GiÃ¡ng Má»™c Ä‘á»: "THáº°NG NÃ€Y Sáº CH, CHO ÄI!"
+                // Giáng Mộc đỏ: "THẰNG NÀY SẠCH, CHO ĐI!"
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
         
-        // CÃº gÃµ bÃºa: Cho mÃ y lá»t qua Ä‘i lÃ m chuyá»‡n tiáº¿p theo (BÃ¬nh luáº­n, Tháº£ tim...)
+        // Cú gõ búa: Cho mày lọt qua đi làm chuyện tiếp theo (Bình luận, Thả tim...)
         filterChain.doFilter(request, response);
     }
 }

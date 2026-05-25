@@ -18,29 +18,29 @@ public class Garden {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // TÃªn khu vÆ°á»n (VD: VÆ°á»n xÆ°Æ¡ng rá»“ng)
+    // Tên khu vườn (VD: Vườn xương rồng)
     @Column(nullable = false)
     private String name;
 
-    // Vá»‹ trÃ­ (VD: Ban cÃ´ng, SÃ¢n thÆ°á»£ng)
+    // Vị trí (VD: Ban công, Sân thượng)
     private String location;
 
     @Column(columnDefinition = "TEXT")
-    private String description; // Phá»¥c vá»¥ chá»©c nÄƒng ghi chÃº mÃ´ táº£ vÆ°á»n
+    private String description; // Phục vụ chức năng ghi chú mô tả vườn
 
-    private String imageUrl; // áº¢nh vÆ°á»n cÃ¢y
+    private String imageUrl; // Ảnh vườn cây
 
-    // Má»‘i quan há»‡ MANY_TO_ONE: Nháº­p VÆ°á»n vÃ o há»‡ thá»‘ng pháº£i biáº¿t VÆ°á»n nÃ y cá»§a Ai.
-    // Nhiá»u VÆ°á»n thuá»™c vá» 1 User.
+    // Mối quan hệ MANY_TO_ONE: Nhập Vườn vào hệ thống phải biết Vườn này của Ai.
+    // Nhiều Vườn thuộc về 1 User.
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    @ToString.Exclude // NgÄƒn cháº·n vÃ²ng láº·p in chá»¯ Ä‘á»‡ quy gÃ¢y sáº­p RAM
+    @ToString.Exclude // Ngăn chặn vòng lặp in chữ đệ quy gây sập RAM
     private User user;
 
-    // Má»‘i quan há»‡ ONE_TO_MANY: 1 VÆ°á»n chá»©a Nhiá»u CÃ¢y.
-    // Lá»‡nh Tá»‘i Cao ÄÃ¡ng Sá»£ Báº­c Nháº¥t (cascade = CascadeType.ALL, orphanRemoval = true):
-    // Phá»¥c vá»¥ cho chá»©c nÄƒng UC11 (XÃ³a VÆ°á»n)! Khi VÆ°á»n bá»‹ xÃ³a, Postgres sáº½ báº¯n lá»‡nh chÃ©m sáº¡ch 
-    // bay máº§u toÃ n bá»™ cÃ¢y trá»“ng (Plant) bÃªn trong cÃ¡i vÆ°á»n Ä‘Ã³ khá»i CSDL.
+    // Mối quan hệ ONE_TO_MANY: 1 Vườn chứa Nhiều Cây.
+    // Lệnh Tối Cao Đáng Sợ Bậc Nhất (cascade = CascadeType.ALL, orphanRemoval = true):
+    // Phục vụ cho chức năng UC11 (Xóa Vườn)! Khi Vườn bị xóa, Postgres sẽ bắn lệnh chém sạch 
+    // bay mầu toàn bộ cây trồng (Plant) bên trong cái vườn đó khỏi CSDL.
     @OneToMany(mappedBy = "garden", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<Plant> plants = new ArrayList<>();

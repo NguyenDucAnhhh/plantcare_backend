@@ -17,7 +17,7 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // ThÃ´ng bÃ¡o gá»­i tá»›i cho mÃ¡y nÃ o?
+    // Thông báo gửi tới cho máy nào?
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @ToString.Exclude
@@ -29,15 +29,15 @@ public class Notification {
     @Column(columnDefinition = "TEXT")
     private String message;
 
-    // Khá»›p Äáº·c Táº£ PhÃ¢n Luá»“ng: POST, FOLLOWER, REMINDER, SYSTEM
+    // Khớp Đặc Tả Phân Luồng: POST, FOLLOWER, REMINDER, SYSTEM
     @Column(nullable = false)
     private String type;
 
-    // Chá»©a ID cá»§a Thá»±c thá»ƒ Ä‘Ã­ch Ä‘á»… App Tá»± Äá»™ng Äiá»u HÆ°á»›ng 
-    // (VÃ­ dá»¥: ID BÃ i Ä‘Äƒng, ID User Theo dÃµi)
+    // Chứa ID của Thực thể đích đễ App Tự Động Điều Hướng 
+    // (Ví dụ: ID Bài đăng, ID User Theo dõi)
     private Long targetId;
 
-    // Khá»›p Äáº·c Táº£ "Cháº¥m Ä‘á» biáº¿n máº¥t" (ChÆ°a Ä‘á»c/ÄÃ£ Ä‘á»c)
+    // Khớp Đặc Tả "Chấm đỏ biến mất" (Chưa đọc/Đã đọc)
     @Column(nullable = false)
     private boolean isRead = false;
 

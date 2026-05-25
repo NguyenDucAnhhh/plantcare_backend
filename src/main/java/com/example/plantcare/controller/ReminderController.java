@@ -29,7 +29,15 @@ public class ReminderController {
         return ResponseEntity.ok(reminderService.createReminder(plantId, request, authentication.getName()));
     }
 
-    @Operation(summary = "Lấy toàn bộ báo thức của 1 Cây")
+    @Operation(summary = "Lấy toàn bộ báo thức của 1 vườn")
+    @GetMapping("/gardens/{gardenId}/reminders")
+    public ResponseEntity<List<ReminderResponse>> getRemindersByGarden(
+            @PathVariable Long gardenId,
+            Authentication authentication) {
+        return ResponseEntity.ok(reminderService.getRemindersByGarden(gardenId, authentication.getName()));
+    }
+
+    @Operation(summary = "Lấy toàn bộ báo thức của 1 cây")
     @GetMapping("/plants/{plantId}/reminders")
     public ResponseEntity<List<ReminderResponse>> getRemindersByPlant(
             @PathVariable Long plantId,

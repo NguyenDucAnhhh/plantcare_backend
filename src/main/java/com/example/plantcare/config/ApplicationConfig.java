@@ -19,33 +19,33 @@ public class ApplicationConfig {
 
     private final UserRepository userRepository;
 
-    // PHÃ“NG Káº¾T Ná»I DB CHO Báº¢O Vá»† SECURITY:
-    // Cung cáº¥p dá»‹ch vá»¥ mÃ³c Email lÃªn thÃ nh cá»¥c Tháº» CÄƒn CÆ°á»›c UserDetails
+    // PHÓNG KẾT NỐI DB CHO BẢO VỆ SECURITY:
+    // Cung cấp dịch vụ móc Email lên thành cục Thẻ Căn Cước UserDetails
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("KhÃ´ng tÃ¬m tháº¥y Email nÃ y!"));
+                .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy Email này!"));
     }
 
-    // NHÃ€ MÃY Há»¢P NHáº¤T DAO (Data Access Object):
-    // Ã‰p Password GÃµ tay + Password DB (BCrypt) Ä‘áº­p vÃ o nhau xem cÃ³ GÃ£y khÃ´ng?
+    // NHÀ MÁY HỢP NHẤT DAO (Data Access Object):
+    // Ép Password Gõ tay + Password DB (BCrypt) đập vào nhau xem có Gãy không?
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder()); // Láº¯p kÃ­nh LÃºp soi mÃ£ hÃ³a
+        authProvider.setPasswordEncoder(passwordEncoder()); // Lắp kính Lúp soi mã hóa
         return authProvider;
     }
 
-    // Tá»”NG QUáº¢N XÃšC Xáº®C ÄÄ‚NG NHáº¬P
-    // Call cÃ¡i nÃ y á»Ÿ táº§ng Controller khi ngÆ°á»i dÃ¹ng nháº¥n nÃºt Login
+    // TỔNG QUẢN XÚC XẮC ĐĂNG NHẬP
+    // Call cái này ở tầng Controller khi người dùng nhấn nút Login
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
-    // MÃY SAY THá»ŠT SINH RA THUáº¬T TOÃN HASH BCRYPT
-    // Password cá»§a ngÆ°á»i dÃ¹ng sáº½ bá»‹ bÄƒm nÃ¡t thÃ nh chuá»—i Random trÆ°á»›c khi cÆ°a vÃ o DB PostgreSQL
+    // MÁY SAY THỊT SINH RA THUẬT TOÁN HASH BCRYPT
+    // Password của người dùng sẽ bị băm nát thành chuỗi Random trước khi cưa vào DB PostgreSQL
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

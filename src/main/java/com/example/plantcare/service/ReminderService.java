@@ -8,6 +8,7 @@ import java.util.List;
 public interface ReminderService {
     ReminderResponse createReminder(Long plantId, ReminderRequest request, String email);
     List<ReminderResponse> getRemindersByPlant(Long plantId, String email);
+    List<ReminderResponse> getRemindersByGarden(Long gardenId, String email);
     ReminderResponse updateReminder(Long reminderId, ReminderRequest request, String email);
     ReminderResponse toggleReminderStatus(Long reminderId, String email);
     void deleteReminder(Long reminderId, String email);

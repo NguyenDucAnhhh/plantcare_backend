@@ -17,7 +17,7 @@ public class CareTip {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Khá»›p Äáº·c Táº£ "Ná»™i dung bá»‹ bá» trá»‘ng D-1..."
+    // Khớp Đặc Tả "Nội dung bị bỏ trống D-1..."
     @Column(nullable = false)
     private String title;
 

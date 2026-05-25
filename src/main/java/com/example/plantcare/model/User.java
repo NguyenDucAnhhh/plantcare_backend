@@ -13,17 +13,19 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 @Data
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class User implements UserDetails {
     
-    // ÄÃ¡nh dáº¥u Ä‘Ã¢y lÃ  KhÃ³a chÃ­nh (Primary Key), tá»± Ä‘á»™ng tÄƒng (1, 2, 3...)
+    // Đánh dấu đây là Khóa chính (Primary Key), tự động tăng (1, 2, 3...)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    
     private Long id;
 
-    // Email khÃ´ng Ä‘Æ°á»£c Ä‘á»ƒ trá»‘ng (nullable = false) vÃ  khÃ´ng Ä‘Æ°á»£c trÃ¹ng nhau (unique = true)
+    // Email không được để trống (nullable = false) và không được trùng nhau (unique = true)
     @Column(nullable = false, unique = true)
     private String email;
 
@@ -33,37 +35,37 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String fullName;
 
-    // áº¢nh Ä‘áº¡i diá»‡n cÃ³ thá»ƒ Ä‘á»ƒ trá»‘ng lÃºc má»›i Ä‘Äƒng kÃ½
+    // Ảnh đại diện có thể để trống lúc mới đăng ký
     private String avatarUrl;
 
-    // Giới thiệu ngắn về bản thân
+    // Giới thiệu ngắn về bản th�n
     @Column(length = 500)
     private String bio;
 
-    // MÃ£ hÃ³a cá»™t Role dÆ°á»›i dáº¡ng chá»¯ (STRING) thay vÃ¬ sá»‘ há»c (ORDINAL)
+    // Mã hóa cột Role dưới dạng chữ (STRING) thay vì số học (ORDINAL)
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
 
-    // Cá» tráº¡ng thÃ¡i: DÃ¹ng cho chá»©c nÄƒng UC39 (Ban/KhÃ³a tÃ i khoáº£n admin)
-    // Tá»± Ä‘á»™ng gÃ¡n báº±ng true khi táº¡o má»›i User
+    // Cờ trạng thái: Dùng cho chức năng UC39 (Ban/Khóa tài khoản admin)
+    // Tự động gán bằng true khi tạo mới User
     @Column(nullable = false)
     private boolean isActive = true;
 
-    // LÆ°u láº¡i bá»™ Ä‘áº¿m thÆ¡i gian khi tÃ i khoáº£n Ä‘Æ°á»£c sinh ra
+    // Lưu lại bộ đếm thơi gian khi tài khoản được sinh ra
     private LocalDateTime createdAt;
     
-    // HÃ m nÃ y sáº½ tá»± Ä‘á»™ng cháº¡y TRÆ¯á»šC KHI lÆ°u cá»¥c Data nÃ y xuá»‘ng PostgreSQL
+    // Hàm này sẽ tự động chạy TRƯỚC KHI lưu cục Data này xuống PostgreSQL
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
 
-    // ==== Äáº¶C Táº¢ UC QUÃŠN Máº¬T KHáº¨U ==== //
+    // ==== ĐẶC TẢ UC QUÊN MẬT KHẨU ==== //
     private String resetOtpCode;
     private LocalDateTime otpExpiration;
 
-    // ==== Äáº¶C Táº¢ UC KHÃ”NG GIAN Báº N BÃˆ MXH (Theo dÃµi/Há»§y theo dÃµi) ==== //
+    // ==== ĐẶC TẢ UC KHÔNG GIAN BẠN BÈ MXH (Theo dõi/Hủy theo dõi) ==== //
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "user_follows",
@@ -71,9 +73,10 @@ public class User implements UserDetails {
         inverseJoinColumns = @JoinColumn(name = "followed_id")
     )
     @ToString.Exclude
+    
     private java.util.Set<User> following = new java.util.HashSet<>();
 
-    // ==== Äáº¶C Táº¢ CÃ€I Äáº¶T Há»† THá»NG - THÃ”NG BÃO ==== //
+    // ==== ĐẶC TẢ CÀI ĐẶT HỆ THỐNG - THÔNG BÁO ==== //
     @Column(nullable = false)
     private boolean notifyAll = true;
 
@@ -86,15 +89,17 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private boolean notifySystem = true;
 
-    // ==== MÃ“C Ná»I PHÃ‚N QUYá»€N Há»† THá»NG SPRING SECURITY KINH ÄIá»‚N ==== //
+    private String fcmToken;
 
-    // Tráº£ vá» tá» giáº¥y phÃ¢n quyá»n (ROLE_USER hay ROLE_ADMIN)
+    // ==== MÓC NỐI PHÂN QUYỀN HỆ THỐNG SPRING SECURITY KINH ĐIỂN ==== //
+
+    // Trả về tờ giấy phân quyền (ROLE_USER hay ROLE_ADMIN)
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
-    // Láº¥y chuá»—i Ä‘á»‹nh danh lÃµi Ä‘á»ƒ chá»©ng minh mÃ y lÃ  ai (DÃ¹ng Email lÃ m cá»™t má»‘c)
+    // Lấy chuỗi định danh lõi để chứng minh mày là ai (Dùng Email làm cột mốc)
     @Override
     public String getUsername() {
         return email;
@@ -105,8 +110,8 @@ public class User implements UserDetails {
         return true;
     }
 
-    // KHÃ”NG CHO PHÃ‰P ÄÄ‚NG NHáº¬P (Account Locked) náº¿u cá» `isActive = false`
-    // TÃ­ch há»£p hoÃ n háº£o sá»©c máº¡nh cá»§a Äáº·c Táº£ KhÃ³a TÃ i Khoáº£n (UC 39)
+    // KHÔNG CHO PHÉP ĐĂNG NHẬP (Account Locked) nếu cờ `isActive = false`
+    // Tích hợp hoàn hảo sức mạnh của Đặc Tả Khóa Tài Khoản (UC 39)
     @Override
     public boolean isAccountNonLocked() {
         return isActive;
@@ -120,5 +125,19 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return isActive;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return id != null && id.equals(user.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

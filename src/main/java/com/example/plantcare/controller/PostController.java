@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import com.example.plantcare.service.CloudinaryService;
+import java.util.ArrayList;
 
 import java.util.List;
 
@@ -19,6 +22,23 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
+    private final CloudinaryService cloudinaryService;
+
+    @Operation(summary = "Upload ảnh cho bài viết", description = "Upload nhiều ảnh lên Cloudinary và trả về danh sách link ảnh")
+    @PostMapping(value = "/images/upload", consumes = "multipart/form-data")
+    public ResponseEntity<List<String>> uploadPostImages(
+            @RequestParam("files") List<MultipartFile> files) {
+        try {
+            List<String> imageUrls = new ArrayList<>();
+            for (MultipartFile file : files) {
+                String imageUrl = cloudinaryService.uploadImage(file, "posts");
+                imageUrls.add(imageUrl);
+            }
+            return ResponseEntity.ok(imageUrls);
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi upload ảnh bài viết: " + e.getMessage());
+        }
+    }
 
     @Operation(summary = "Đăng bài viết mới")
     @PostMapping
@@ -30,8 +50,15 @@ public class PostController {
 
     @Operation(summary = "Lấy toàn bộ bài viết trên Newfeed")
     @GetMapping
-    public ResponseEntity<List<PostResponse>> getAllVisiblePosts() {
-        return ResponseEntity.ok(postService.getAllVisiblePosts());
+    public ResponseEntity<List<PostResponse>> getAllVisiblePosts(Authentication authentication) {
+        String email = authentication != null ? authentication.getName() : null;
+        return ResponseEntity.ok(postService.getAllVisiblePosts(email));
+    }
+
+    @Operation(summary = "Lấy danh sách bài viết đang theo dõi")
+    @GetMapping("/following")
+    public ResponseEntity<List<PostResponse>> getFollowingPosts(Authentication authentication) {
+        return ResponseEntity.ok(postService.getFollowingPosts(authentication.getName()));
     }
 
     @Operation(summary = "Lấy danh sách bài viết của tôi")
@@ -42,8 +69,9 @@ public class PostController {
 
     @Operation(summary = "Xem chi tiết 1 bài viết")
     @GetMapping("/{postId}")
-    public ResponseEntity<PostResponse> getPostById(@PathVariable Long postId) {
-        return ResponseEntity.ok(postService.getPostById(postId));
+    public ResponseEntity<PostResponse> getPostById(@PathVariable Long postId, Authentication authentication) {
+        String email = authentication != null ? authentication.getName() : null;
+        return ResponseEntity.ok(postService.getPostById(postId, email));
     }
 
     @Operation(summary = "Sửa bài viết của chính mình")

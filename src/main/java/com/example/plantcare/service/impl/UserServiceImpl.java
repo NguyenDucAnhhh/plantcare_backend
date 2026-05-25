@@ -1,13 +1,22 @@
 package com.example.plantcare.service.impl;
 
+import com.example.plantcare.dto.request.ChangePasswordRequest;
+import com.example.plantcare.dto.request.NotificationSettingsRequest;
 import com.example.plantcare.dto.response.UserProfileResponse;
 import com.example.plantcare.exception.ResourceNotFoundException;
+import com.example.plantcare.model.NotificationType;
 import com.example.plantcare.model.User;
+import com.example.plantcare.model.Notification;
+import com.example.plantcare.repository.NotificationRepository;
+import java.time.LocalDateTime;
 import com.example.plantcare.repository.UserRepository;
 import com.example.plantcare.service.CloudinaryService;
+import com.example.plantcare.service.FirebasePushService;
 import com.example.plantcare.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
@@ -20,10 +29,20 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final CloudinaryService cloudinaryService;
+    private final PasswordEncoder passwordEncoder;
+    private final FirebasePushService firebasePushService;
+    private final NotificationRepository notificationRepository;
 
     private User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Tài khoản không tồn tại!"));
+    }
+
+    @Override
+    public void updateFcmToken(String email, String fcmToken) {
+        User user = getUserByEmail(email);
+        user.setFcmToken(fcmToken);
+        userRepository.save(user);
     }
 
     @Override
@@ -35,11 +54,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserProfileResponse getUserProfileById(Long userId) {
-        User user = userRepository.findById(userId)
+    @Transactional
+    public UserProfileResponse getUserProfileById(Long userId, String currentUserEmail) {
+        User targetUser = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại!"));
-        UserProfileResponse response = UserProfileResponse.fromEntity(user);
-        response.setFollowersCount(userRepository.countFollowers(user.getId()));
+        UserProfileResponse response = UserProfileResponse.fromEntity(targetUser);
+        response.setFollowersCount(userRepository.countFollowers(targetUser.getId()));
+        
+        if (currentUserEmail != null) {
+            User currentUser = getUserByEmail(currentUserEmail);
+            response.setFollowing(currentUser.getFollowing().contains(targetUser));
+        } else {
+            response.setFollowing(false);
+        }
+        
         return response;
     }
 
@@ -60,7 +88,6 @@ public class UserServiceImpl implements UserService {
     public UserProfileResponse uploadAvatar(MultipartFile file, String email) {
         try {
             User user = getUserByEmail(email);
-            // Upload len Cloudinary thu muc 'avatars'
             String avatarUrl = cloudinaryService.uploadImage(file, "avatars");
             user.setAvatarUrl(avatarUrl);
             user = userRepository.save(user);
@@ -74,6 +101,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public boolean toggleFollow(Long targetUserId, String email) {
         User currentUser = getUserByEmail(email);
         User targetUser = userRepository.findById(targetUserId)
@@ -86,9 +114,24 @@ public class UserServiceImpl implements UserService {
         boolean isAlreadyFollowing = currentUser.getFollowing().contains(targetUser);
 
         if (isAlreadyFollowing) {
-            currentUser.getFollowing().remove(targetUser); // Hủy Follow
+            currentUser.getFollowing().remove(targetUser); // H?y Follow
         } else {
-            currentUser.getFollowing().add(targetUser); // Bấm Follow
+            currentUser.getFollowing().add(targetUser); // B?m Follow
+            String title = "Có người theo dõi mới";
+            String body = currentUser.getFullName() + " đã bắt đầu theo dõi bạn.";
+            
+            Notification notif = Notification.builder()
+                    .title(title)
+                    .message(body)
+                    .type(NotificationType.COMMUNITY.name())
+                    .recipient(targetUser)
+                    .targetId(currentUser.getId())
+                    .createdAt(LocalDateTime.now())
+                    .isRead(false)
+                    .build();
+            notificationRepository.save(notif);
+            
+            firebasePushService.sendPushNotification(targetUser, NotificationType.COMMUNITY, title, body);
         }
 
         userRepository.save(currentUser);
@@ -96,6 +139,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public List<UserProfileResponse> getMyFollowings(String email) {
         User currentUser = getUserByEmail(email);
         return currentUser.getFollowing().stream()
@@ -105,5 +149,36 @@ public class UserServiceImpl implements UserService {
                     return res;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public UserProfileResponse updateNotificationSettings(String email, NotificationSettingsRequest request) {
+        User user = getUserByEmail(email);
+
+        user.setNotifyAll(request.isNotifyAll());
+        user.setNotifyCommunity(request.isNotifyCommunity());
+        user.setNotifyReminder(request.isNotifyReminder());
+        user.setNotifySystem(request.isNotifySystem());
+        
+        if (request.getFcmToken() != null && !request.getFcmToken().trim().isEmpty()) {
+            user.setFcmToken(request.getFcmToken());
+        }
+
+        user = userRepository.save(user);
+        UserProfileResponse response = UserProfileResponse.fromEntity(user);
+        response.setFollowersCount(userRepository.countFollowers(user.getId()));
+        return response;
+    }
+
+    @Override
+    @Transactional
+    public void changePassword(String email, ChangePasswordRequest request) {
+        User user = getUserByEmail(email);
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+            throw new RuntimeException("Mật khẩu cũ không chính xác!");
+        }
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
     }
 }

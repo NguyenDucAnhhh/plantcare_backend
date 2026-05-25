@@ -5,10 +5,10 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-// NGÄ‚N CHáº¶N HACKER SPAM TIM:
-// Cáº¥u trÃºc RÃ o cáº¯m Unique nÃ y Ã©p há»‡ thá»‘ng PostgreSQL chá»‰ cho phÃ©p
-// 1 ID User Ä‘Æ°á»£c phÃ©p ghÃ©p Ä‘Ã´i Like má»™t ID Post Ä‘Ãºng DUY NHáº¤T 1 Láº¦N!
-// Náº¿u cá»‘ tÃ¬nh nÃ©m thÃªm Tim láº§n 2, SQL sáº½ bÃ¡o Lá»—i Ä‘Ã¡nh báº­t ngay láº­p tá»©c.
+// NGĂN CHẶN HACKER SPAM TIM:
+// Cấu trúc Rào cắm Unique này ép hệ thống PostgreSQL chỉ cho phép
+// 1 ID User được phép ghép đôi Like một ID Post đúng DUY NHẤT 1 LẦN!
+// Nếu cố tình ném thêm Tim lần 2, SQL sẽ báo Lỗi đánh bật ngay lập tức.
 @Table(name = "like_actions", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"user_id", "post_id"})
 })
@@ -23,13 +23,13 @@ public class LikeAction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Ai Tháº£?
+    // Ai Thả?
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @ToString.Exclude
     private User user;
 
-    // Tháº£ vÃ o BÃ i nÃ o?
+    // Thả vào Bài nào?
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
     @ToString.Exclude

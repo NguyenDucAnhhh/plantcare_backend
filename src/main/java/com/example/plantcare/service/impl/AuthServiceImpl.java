@@ -13,6 +13,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.example.plantcare.dto.request.ForgotPasswordRequest;
+import com.example.plantcare.dto.request.VerifyOtpRequest;
+import com.example.plantcare.dto.request.ResetPasswordRequest;
+import com.example.plantcare.service.EmailService;
+import java.util.Random;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +28,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final EmailService emailService;
 
     @Override
     public AuthResponse register(RegisterRequest request) {
@@ -66,5 +73,52 @@ public class AuthServiceImpl implements AuthService {
                 .fullName(user.getFullName())
                 .role(user.getRole().name()) // "USER" hoặc "ADMIN"
                 .build();
+    }
+    @Override
+    public void forgotPassword(ForgotPasswordRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại!"));
+        
+        String otp = String.format("%06d", new Random().nextInt(999999));
+        user.setResetOtpCode(otp);
+        user.setOtpExpiration(LocalDateTime.now().plusMinutes(10));
+        userRepository.save(user);
+
+        emailService.sendOtpEmail(user.getEmail(), otp);
+    }
+
+    @Override
+    public boolean verifyOtp(VerifyOtpRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại!"));
+        
+        if (user.getResetOtpCode() == null || !user.getResetOtpCode().equals(request.getOtp())) {
+            throw new RuntimeException("Mã OTP không hợp lệ!");
+        }
+        
+        if (user.getOtpExpiration() == null || user.getOtpExpiration().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Mã OTP đã hết hạn!");
+        }
+        
+        return true;
+    }
+
+    @Override
+    public void resetPassword(ResetPasswordRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại!"));
+                
+        if (user.getResetOtpCode() == null || !user.getResetOtpCode().equals(request.getOtp())) {
+            throw new RuntimeException("Mã OTP không hợp lệ!");
+        }
+        
+        if (user.getOtpExpiration() == null || user.getOtpExpiration().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Mã OTP đã hết hạn!");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        user.setResetOtpCode(null);
+        user.setOtpExpiration(null);
+        userRepository.save(user);
     }
 }

@@ -3,5 +3,5 @@ import lombok.Data;
 @Data
 public class CommentRequest {
     private String content;
-    private Long parentCommentId; // TÃƒÂ¹y chÃ¡Â»Ân nÃ¡ÂºÂ¿u muÃ¡Â»â€˜n Reply bÃƒÂ¬nh luÃ¡ÂºÂ­n Ã„ÂÃ¡Â»â€¡ quy
+    private Long parentCommentId; // T�y chọn nếu muốn Reply b�nh luận Đệ quy
 }

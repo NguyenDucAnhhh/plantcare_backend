@@ -3,7 +3,6 @@ package com.example.plantcare.dto.response;
 import com.example.plantcare.model.User;
 import lombok.Builder;
 import lombok.Data;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
 
@@ -17,9 +16,13 @@ public class UserProfileResponse {
     private String bio;
     private int followersCount;
     private int followingCount;
-    @JsonProperty("isFollowing")
+    @com.fasterxml.jackson.annotation.JsonProperty("isFollowing")
     private boolean isFollowing;
     private LocalDateTime createdAt;
+    @com.fasterxml.jackson.annotation.JsonProperty("notifyAll") private boolean notifyAll;
+    @com.fasterxml.jackson.annotation.JsonProperty("notifyCommunity") private boolean notifyCommunity;
+    @com.fasterxml.jackson.annotation.JsonProperty("notifyReminder") private boolean notifyReminder;
+    @com.fasterxml.jackson.annotation.JsonProperty("notifySystem") private boolean notifySystem;
 
     public static UserProfileResponse fromEntity(User user) {
         return UserProfileResponse.builder()
@@ -30,6 +33,10 @@ public class UserProfileResponse {
                 .bio(user.getBio())
                 .followingCount(user.getFollowing() != null ? user.getFollowing().size() : 0)
                 .createdAt(user.getCreatedAt())
+                .notifyAll(user.isNotifyAll())
+                .notifyCommunity(user.isNotifyCommunity())
+                .notifyReminder(user.isNotifyReminder())
+                .notifySystem(user.isNotifySystem())
                 .build();
     }
 }
