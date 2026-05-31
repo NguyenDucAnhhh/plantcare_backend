@@ -27,12 +27,23 @@ public class FirebaseConfig {
     public void initFirebase() {
         try {
             if (FirebaseApp.getApps().isEmpty()) {
-                InputStream serviceAccount = getClass()
-                        .getClassLoader()
-                        .getResourceAsStream(serviceAccountPath);
+                InputStream serviceAccount;
+                
+                // Nếu đường dẫn bắt đầu bằng "/" (như /etc/secrets trên Render) hoặc "C:" -> Đọc file trực tiếp từ ổ cứng
+                if (serviceAccountPath.startsWith("/") || serviceAccountPath.contains(":\\")) {
+                    java.io.File file = new java.io.File(serviceAccountPath);
+                    if (!file.exists()) {
+                        System.out.println("[WARN] Firebase: Khong tim thay file " + serviceAccountPath + ". Push Notification se bi tat.");
+                        return;
+                    }
+                    serviceAccount = new java.io.FileInputStream(file);
+                } else {
+                    // Môi trường Local: Đọc từ thư mục resources
+                    serviceAccount = getClass().getClassLoader().getResourceAsStream(serviceAccountPath);
+                }
 
                 if (serviceAccount == null) {
-                    System.out.println("[WARN] Firebase: Khong tim thay file " + serviceAccountPath + ". Push Notification se bi tat.");
+                    System.out.println("[WARN] Firebase: Khong tim thay file " + serviceAccountPath + " trong resources. Push Notification se bi tat.");
                     return;
                 }
 
