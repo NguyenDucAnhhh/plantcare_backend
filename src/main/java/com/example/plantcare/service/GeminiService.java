@@ -93,10 +93,11 @@ public class GeminiService {
         log.error("[Gemini] Loi goi API: {}", e.getMessage());
         // PHẢI TRẢ VỀ JSON ĐỂ CONTROLLER KHÔNG BỊ CRASH
         return "{" +
-                "\"tenBenh\": \"Lỗi hệ thống\"," +
-                "\"nguyenNhan\": \"Không thể kết nối với AI (" + e.getMessage() + ")\"," +
-                "\"cachChua\": \"Vui lòng kiểm tra lại hình ảnh hoặc thử lại sau.\"," +
-                "\"doTinCay\": \"0%\"" +
+                "\"plantName\": \"Không xác định\"," +
+                "\"diseaseName\": \"Lỗi hệ thống\"," +
+                "\"cause\": \"Không thể kết nối với máy chủ AI (" + e.getMessage() + "). Vui lòng thử lại.\"," +
+                "\"treatment\": \"Vui lòng kiểm tra lại hình ảnh hoặc thử lại sau vài phút.\"," +
+                "\"confidence\": 0.0" +
                 "}";
     }
     }
