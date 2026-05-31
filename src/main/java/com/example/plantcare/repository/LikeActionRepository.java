@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface LikeActionRepository extends JpaRepository<LikeAction, Long> {
     Optional<LikeAction> findByUserAndPost(User user, Post post);
     boolean existsByUser_EmailAndPost(String email, Post post);
+    @org.springframework.transaction.annotation.Transactional
+    void deleteByPost(Post post);
 }

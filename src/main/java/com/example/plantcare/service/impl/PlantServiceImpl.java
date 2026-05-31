@@ -34,7 +34,7 @@ public class PlantServiceImpl implements PlantService {
         Garden garden = gardenRepository.findById(gardenId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy khu vườn!"));
         if (!garden.getUser().getId().equals(owner.getId())) {
-            throw new RuntimeException("Bạn không có quyền truy cập khu vườn này!");
+            throw new com.example.plantcare.exception.AppException("FORBIDDEN_GARDEN_ACCESS", "Bạn không có quyền truy cập khu vườn này!");
         }
         return garden;
     }
@@ -43,7 +43,7 @@ public class PlantServiceImpl implements PlantService {
         Plant plant = plantRepository.findById(plantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy cây!"));
         if (!plant.getGarden().getUser().getId().equals(owner.getId())) {
-            throw new RuntimeException("Bạn không có quyền thao tác với cây này!");
+            throw new com.example.plantcare.exception.AppException("FORBIDDEN_PLANT_ACCESS", "Bạn không có quyền thao tác với cây này!");
         }
         return plant;
     }
@@ -106,3 +106,4 @@ public class PlantServiceImpl implements PlantService {
         plantRepository.delete(plant);
     }
 }
+

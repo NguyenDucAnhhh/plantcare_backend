@@ -31,7 +31,7 @@ public class GardenServiceImpl implements GardenService {
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy khu vườn này!"));
         
         if (!garden.getUser().getId().equals(owner.getId())) {
-            throw new RuntimeException("Bạn không có quyền thao tác trên khu vườn của người khác!");
+            throw new com.example.plantcare.exception.AppException("FORBIDDEN_GARDEN_ACCESS", "Bạn không có quyền thao tác trên khu vườn của người khác!");
         }
         return garden;
     }
@@ -81,3 +81,4 @@ public class GardenServiceImpl implements GardenService {
         gardenRepository.delete(garden);
     }
 }
+

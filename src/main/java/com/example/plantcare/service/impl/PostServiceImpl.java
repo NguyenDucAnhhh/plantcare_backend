@@ -9,6 +9,9 @@ import com.example.plantcare.repository.PostRepository;
 import com.example.plantcare.repository.UserRepository;
 import com.example.plantcare.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +25,7 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final com.example.plantcare.repository.LikeActionRepository likeActionRepository;
+    private final com.example.plantcare.repository.ReportTicketRepository reportTicketRepository;
 
     private User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
@@ -53,20 +57,21 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostResponse> getAllVisiblePosts(String currentUserEmail) {
-        return postRepository.findAll().stream()
-                .filter(Post::isVisible)
+    public List<PostResponse> getAllVisiblePosts(int page, int size, String currentUserEmail) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        return postRepository.findByIsVisibleTrueOrderByCreatedAtDesc(pageable).stream()
                 .map(post -> mapToResponse(post, currentUserEmail))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<PostResponse> getFollowingPosts(String email) {
+    public List<PostResponse> getFollowingPosts(int page, int size, String email) {
         User user = getUserByEmail(email);
         List<Long> followingIds = user.getFollowing().stream().map(User::getId).collect(Collectors.toList());
         if (followingIds.isEmpty()) return List.of();
-        return postRepository.findByAuthorIdInOrderByCreatedAtDesc(followingIds).stream()
-                .filter(Post::isVisible)
+        
+        Pageable pageable = PageRequest.of(page, size);
+        return postRepository.findByAuthorIdInAndIsVisibleTrueOrderByCreatedAtDesc(followingIds, pageable).stream()
                 .map(post -> mapToResponse(post, email))
                 .collect(Collectors.toList());
     }
@@ -81,11 +86,19 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public List<PostResponse> getUserPosts(Long userId, String currentUserEmail) {
+        return postRepository.findByAuthorIdOrderByCreatedAtDesc(userId).stream()
+                .filter(Post::isVisible)
+                .map(post -> mapToResponse(post, currentUserEmail))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public PostResponse getPostById(Long postId, String currentUserEmail) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy bài viết!"));
         if (!post.isVisible()) {
-            throw new RuntimeException("Bài viết đã bị ẩn!");
+            throw new com.example.plantcare.exception.AppException("POST_HIDDEN", "Bài viết đã bị ẩn!");
         }
         return mapToResponse(post, currentUserEmail);
     }
@@ -97,7 +110,7 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy bài viết!"));
 
         if (!post.getAuthor().getId().equals(author.getId())) {
-            throw new RuntimeException("Bạn không có quyền sửa bài viết của người khác!");
+            throw new com.example.plantcare.exception.AppException("FORBIDDEN_EDIT_POST", "Bạn không có quyền sửa bài viết của người khác!");
         }
 
         if (request.getContent() != null) post.setContent(request.getContent());
@@ -107,15 +120,30 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public List<PostResponse> searchPosts(String keyword, int page, int size, String currentUserEmail) {
+        Pageable pageable = PageRequest.of(page, size);
+        return postRepository.findByContentContainingIgnoreCaseAndIsVisibleTrueOrderByCreatedAtDesc(keyword, pageable).stream()
+                .map(post -> mapToResponse(post, currentUserEmail))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public void deletePost(Long postId, String email) {
         User author = getUserByEmail(email);
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy bài viết!"));
 
         if (!post.getAuthor().getId().equals(author.getId())) {
-            throw new RuntimeException("Bạn không có quyền xóa bài viết của người khác!");
+            throw new com.example.plantcare.exception.AppException("FORBIDDEN_DELETE_POST", "Bạn không có quyền xóa bài viết của người khác!");
         }
 
-        postRepository.delete(post);
+        if (reportTicketRepository.existsByPost(post)) {
+            post.setVisible(false);
+            postRepository.save(post);
+        } else {
+            likeActionRepository.deleteByPost(post);
+            postRepository.delete(post);
+        }
     }
 }
+

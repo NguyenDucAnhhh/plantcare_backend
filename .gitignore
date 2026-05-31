@@ -36,3 +36,10 @@ out/
 ### VS Code ###
 .vscode/
 backup/
+
+# API Secrets
+firebase-service-account.json
+
+.env
+
+.env.properties

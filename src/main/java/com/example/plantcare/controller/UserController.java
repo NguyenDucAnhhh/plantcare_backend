@@ -70,6 +70,20 @@ public class UserController {
     }
 
     @Operation(summary = "Cap nhat FCM Token cua thiet bi")
+        @PutMapping("/me/notification-settings")
+    public ResponseEntity<UserProfileResponse> updateNotificationSettings(
+            @RequestBody com.example.plantcare.dto.request.NotificationSettingsRequest request,
+            org.springframework.security.core.Authentication authentication) {
+        String email = authentication.getName();
+        return ResponseEntity.ok(userService.updateNotificationSettings(email, request));
+    }
+    @Operation(summary = "Tim kiem nguoi dung")
+    @GetMapping("/search")
+    public ResponseEntity<List<UserProfileResponse>> searchUsers(@RequestParam String keyword, Authentication authentication) {
+        String email = authentication != null ? authentication.getName() : null;
+        return ResponseEntity.ok(userService.searchUsers(keyword, email));
+    }
+
     @PutMapping("/fcm-token")
     public ResponseEntity<Void> updateFcmToken(
             @RequestBody java.util.Map<String, String> body,

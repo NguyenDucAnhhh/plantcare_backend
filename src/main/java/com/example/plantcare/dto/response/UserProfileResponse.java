@@ -20,6 +20,11 @@ public class UserProfileResponse {
     @JsonProperty("isFollowing")
     private boolean isFollowing;
     private LocalDateTime createdAt;
+    
+    private boolean notifyAll;
+    private boolean notifyCommunity;
+    private boolean notifyReminder;
+    private boolean notifySystem;
 
     public static UserProfileResponse fromEntity(User user) {
         return UserProfileResponse.builder()
@@ -30,6 +35,10 @@ public class UserProfileResponse {
                 .bio(user.getBio())
                 .followingCount(user.getFollowing() != null ? user.getFollowing().size() : 0)
                 .createdAt(user.getCreatedAt())
+                .notifyAll(user.isNotifyAll())
+                .notifyCommunity(user.isNotifyCommunity())
+                .notifyReminder(user.isNotifyReminder())
+                .notifySystem(user.isNotifySystem())
                 .build();
     }
 }

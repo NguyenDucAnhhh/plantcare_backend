@@ -126,9 +126,10 @@ public class CommentServiceImpl implements CommentService {
 
         // Chỉ tác giả bài viết hoặc tác giả bình luận mới được xóa
         if (!comment.getAuthor().getId().equals(author.getId()) && !comment.getPost().getAuthor().getId().equals(author.getId())) {
-            throw new RuntimeException("Bạn không có quyền xóa bình luận này!");
+            throw new com.example.plantcare.exception.AppException("FORBIDDEN_DELETE_COMMENT", "Bạn không có quyền xóa bình luận này!");
         }
 
         commentRepository.delete(comment);
     }
 }
+

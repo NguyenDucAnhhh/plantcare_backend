@@ -47,7 +47,7 @@ public class ReportTicketServiceImpl implements ReportTicketService {
         User admin = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Tài khoản không tồn tại!"));
         if (admin.getRole() != Role.ADMIN) {
-            throw new RuntimeException("Chỉ ADMIN mới được xem danh sách tố cáo!");
+            throw new com.example.plantcare.exception.AppException("FORBIDDEN_ADMIN_ONLY", "Chỉ ADMIN mới được xem danh sách tố cáo!");
         }
 
         return reportTicketRepository.findAll().stream()
@@ -60,7 +60,7 @@ public class ReportTicketServiceImpl implements ReportTicketService {
         User admin = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Tài khoản không tồn tại!"));
         if (admin.getRole() != Role.ADMIN) {
-            throw new RuntimeException("Chỉ ADMIN mới được giải quyết tố cáo!");
+            throw new com.example.plantcare.exception.AppException("FORBIDDEN_ADMIN_ONLY", "Chỉ ADMIN mới được giải quyết tố cáo!");
         }
 
         ReportTicket ticket = reportTicketRepository.findById(ticketId)
@@ -81,3 +81,4 @@ public class ReportTicketServiceImpl implements ReportTicketService {
         reportTicketRepository.save(ticket);
     }
 }
+

@@ -13,6 +13,7 @@ public class CareTipResponse {
     private String title;
     private String content;
     private String imageUrl;
+    private String category;
     private LocalDateTime createdAt;
 
     public static CareTipResponse fromEntity(CareTip careTip) {
@@ -21,6 +22,7 @@ public class CareTipResponse {
                 .title(careTip.getTitle())
                 .content(careTip.getContent())
                 .imageUrl(careTip.getImageUrl())
+                .category(careTip.getCategory())
                 .createdAt(careTip.getCreatedAt())
                 .build();
     }

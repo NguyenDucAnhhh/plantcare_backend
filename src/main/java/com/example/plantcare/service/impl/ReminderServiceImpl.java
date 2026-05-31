@@ -34,7 +34,7 @@ public class ReminderServiceImpl implements ReminderService {
         Plant plant = plantRepository.findById(plantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy cây!"));
         if (!plant.getGarden().getUser().getId().equals(owner.getId())) {
-            throw new RuntimeException("Bạn không có quyền truy cập cây này!");
+            throw new com.example.plantcare.exception.AppException("FORBIDDEN_PLANT_ACCESS", "Bạn không có quyền truy cập cây này!");
         }
         return plant;
     }
@@ -43,7 +43,7 @@ public class ReminderServiceImpl implements ReminderService {
         Reminder reminder = reminderRepository.findById(reminderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy báo thức!"));
         if (!reminder.getPlant().getGarden().getUser().getId().equals(owner.getId())) {
-            throw new RuntimeException("Bạn không có quyền sửa báo thức này!");
+            throw new com.example.plantcare.exception.AppException("FORBIDDEN_EDIT_REMINDER", "Bạn không có quyền sửa báo thức này!");
         }
         return reminder;
     }
@@ -117,3 +117,4 @@ public class ReminderServiceImpl implements ReminderService {
         reminderRepository.delete(reminder);
     }
 }
+

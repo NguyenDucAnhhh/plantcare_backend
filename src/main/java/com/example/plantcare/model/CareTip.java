@@ -27,6 +27,9 @@ public class CareTip {
     @Column(nullable = false)
     private String imageUrl;
 
+    @Column
+    private String category;
+
     private LocalDateTime createdAt;
 
     @PrePersist

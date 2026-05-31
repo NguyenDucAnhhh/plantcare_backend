@@ -40,7 +40,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Thông báo không tồn tại!"));
 
         if (!notif.getRecipient().getId().equals(user.getId())) {
-            throw new RuntimeException("Bạn không có quyền thao tác thông báo này!");
+            throw new com.example.plantcare.exception.AppException("FORBIDDEN_NOTIFICATION_ACCESS", "Bạn không có quyền thao tác thông báo này!");
         }
 
         notif.setRead(true);
@@ -58,3 +58,4 @@ public class NotificationServiceImpl implements NotificationService {
         notificationRepository.saveAll(unreadNotifs);
     }
 }
+

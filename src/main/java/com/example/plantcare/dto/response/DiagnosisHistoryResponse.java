@@ -17,6 +17,14 @@ public class DiagnosisHistoryResponse {
     private String treatment;
     private double confidenceScore;
     private LocalDateTime createdAt;
+    
+    // Evaluation fields
+    private Integer userFeedbackRating;
+    private Boolean adminIsCorrect;
+    private String adminNote;
+    
+    // User info
+    private String userEmail;
 
     public static DiagnosisHistoryResponse fromEntity(DiagnosisHistory history) {
         return DiagnosisHistoryResponse.builder()
@@ -28,6 +36,11 @@ public class DiagnosisHistoryResponse {
                 .treatment(history.getTreatment())
                 .confidenceScore(history.getConfidenceScore())
                 .createdAt(history.getCreatedAt())
+                .userFeedbackRating(history.getUserFeedbackRating())
+                .adminIsCorrect(history.getAdminIsCorrect())
+                .adminNote(history.getAdminNote())
+                .userEmail(history.getUser() != null ? history.getUser().getEmail() : null)
                 .build();
     }
 }
+

@@ -96,7 +96,7 @@ public class UserServiceImpl implements UserService {
             response.setFollowersCount(userRepository.countFollowers(user.getId()));
             return response;
         } catch (IOException e) {
-            throw new RuntimeException("Lỗi khi upload ảnh đại diện: " + e.getMessage());
+            throw new com.example.plantcare.exception.AppException("UPLOAD_AVATAR_FAILED", "Lỗi khi upload ảnh đại diện: " + e.getMessage());
         }
     }
 
@@ -108,7 +108,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại!"));
 
         if (currentUser.getId().equals(targetUser.getId())) {
-            throw new RuntimeException("Bạn không thể tự theo dõi chính mình!");
+            throw new com.example.plantcare.exception.AppException("USER_CANNOT_FOLLOW_SELF", "Bạn không thể tự theo dõi chính mình!");
         }
 
         boolean isAlreadyFollowing = currentUser.getFollowing().contains(targetUser);
@@ -173,12 +173,35 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    public List<UserProfileResponse> searchUsers(String keyword, String currentUserEmail) {
+        return userRepository.searchUsers(keyword).stream()
+            .map(user -> {
+                UserProfileResponse res = UserProfileResponse.fromEntity(user);
+                res.setFollowersCount(userRepository.countFollowers(user.getId()));
+                if (currentUserEmail != null) {
+                    try {
+                        User currentUser = getUserByEmail(currentUserEmail);
+                        res.setFollowing(currentUser.getFollowing().contains(user));
+                    } catch (Exception e) {
+                        res.setFollowing(false);
+                    }
+                } else {
+                    res.setFollowing(false);
+                }
+                return res;
+            })
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
     public void changePassword(String email, ChangePasswordRequest request) {
         User user = getUserByEmail(email);
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
-            throw new RuntimeException("Mật khẩu cũ không chính xác!");
+            throw new com.example.plantcare.exception.AppException("USER_WRONG_OLD_PASSWORD", "Mật khẩu cũ không chính xác!");
         }
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
     }
 }
+

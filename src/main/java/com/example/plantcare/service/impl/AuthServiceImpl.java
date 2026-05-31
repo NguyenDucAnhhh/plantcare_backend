@@ -33,7 +33,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("Email đã được sử dụng!");
+            throw new com.example.plantcare.exception.AppException("AUTH_EMAIL_EXISTS", "Email đã được sử dụng!");
         }
 
         User user = User.builder()
@@ -93,11 +93,11 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại!"));
         
         if (user.getResetOtpCode() == null || !user.getResetOtpCode().equals(request.getOtp())) {
-            throw new RuntimeException("Mã OTP không hợp lệ!");
+            throw new com.example.plantcare.exception.AppException("AUTH_INVALID_OTP", "Mã OTP không hợp lệ!");
         }
         
         if (user.getOtpExpiration() == null || user.getOtpExpiration().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Mã OTP đã hết hạn!");
+            throw new com.example.plantcare.exception.AppException("AUTH_OTP_EXPIRED", "Mã OTP đã hết hạn!");
         }
         
         return true;
@@ -109,11 +109,11 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại!"));
                 
         if (user.getResetOtpCode() == null || !user.getResetOtpCode().equals(request.getOtp())) {
-            throw new RuntimeException("Mã OTP không hợp lệ!");
+            throw new com.example.plantcare.exception.AppException("AUTH_INVALID_OTP", "Mã OTP không hợp lệ!");
         }
         
         if (user.getOtpExpiration() == null || user.getOtpExpiration().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Mã OTP đã hết hạn!");
+            throw new com.example.plantcare.exception.AppException("AUTH_OTP_EXPIRED", "Mã OTP đã hết hạn!");
         }
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));

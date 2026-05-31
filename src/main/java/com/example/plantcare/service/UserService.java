@@ -17,4 +17,5 @@ public interface UserService {
     UserProfileResponse uploadAvatar(org.springframework.web.multipart.MultipartFile file, String email);
     boolean toggleFollow(Long targetUserId, String email);
     List<UserProfileResponse> getMyFollowings(String email);
+    List<UserProfileResponse> searchUsers(String keyword, String currentUserEmail);
 }
