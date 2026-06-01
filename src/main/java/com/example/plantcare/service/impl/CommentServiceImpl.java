@@ -35,19 +35,19 @@ public class CommentServiceImpl implements CommentService {
 
     private User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Tài khoản không tồn tại!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("USER_NOT_FOUND", "Tài khoản không tồn tại!"));
     }
 
     @Override
     public CommentResponse addComment(Long postId, CommentRequest request, String email) {
         User author = getUserByEmail(email);
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Bài viết không tồn tại!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("POST_NOT_FOUND", "Bài viết không tồn tại!"));
 
         Comment parentComment = null;
         if (request.getParentCommentId() != null) {
             parentComment = commentRepository.findById(request.getParentCommentId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Bình luận gốc không tồn tại!"));
+                    .orElseThrow(() -> new com.example.plantcare.exception.AppException("COMMENT_NOT_FOUND", "Bình luận gốc không tồn tại!"));
         }
 
         Comment newComment = Comment.builder()
@@ -111,7 +111,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<CommentResponse> getCommentsByPost(Long postId, String currentUserEmail) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Bài viết không tồn tại!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("POST_NOT_FOUND", "Bài viết không tồn tại!"));
 
         return post.getComments().stream()
                 .map(c -> CommentResponse.fromEntity(c, currentUserEmail))
@@ -122,7 +122,7 @@ public class CommentServiceImpl implements CommentService {
     public void deleteComment(Long commentId, String email) {
         User author = getUserByEmail(email);
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Bình luận không tồn tại!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("COMMENT_NOT_FOUND", "Bình luận không tồn tại!"));
 
         // Chỉ tác giả bài viết hoặc tác giả bình luận mới được xóa
         if (!comment.getAuthor().getId().equals(author.getId()) && !comment.getPost().getAuthor().getId().equals(author.getId())) {

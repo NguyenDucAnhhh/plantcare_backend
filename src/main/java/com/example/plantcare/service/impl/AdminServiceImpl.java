@@ -12,6 +12,8 @@ import com.example.plantcare.service.AdminService;
 import com.example.plantcare.model.User;
 import com.example.plantcare.model.Role;
 import com.example.plantcare.model.ReportTicket;
+import com.example.plantcare.exception.AppException;
+import com.example.plantcare.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
@@ -59,7 +61,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void toggleUserStatus(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new AppException("USER_NOT_FOUND", "Tài khoản không tồn tại!"));
         user.setActive(!user.isActive());
         userRepository.save(user);
     }
@@ -67,7 +69,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void changeUserRole(Long userId, String newRole) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new AppException("USER_NOT_FOUND", "Tài khoản không tồn tại!"));
         user.setRole(Role.valueOf(newRole.toUpperCase()));
         userRepository.save(user);
     }
@@ -97,7 +99,7 @@ public class AdminServiceImpl implements AdminService {
         @Override
     public void resolveReport(Long reportId, String action) {
         com.example.plantcare.model.ReportTicket ticket = reportTicketRepository.findById(reportId)
-                .orElseThrow(() -> new RuntimeException("Report not found"));
+                .orElseThrow(() -> new AppException("REPORT_NOT_FOUND", "Phiếu báo cáo không tồn tại!"));
         if ("DELETE_POST".equalsIgnoreCase(action)) {
             ticket.setStatus("DELETED");
             ticket.getPost().setVisible(false);
@@ -128,7 +130,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void togglePostVisibility(Long postId) {
         com.example.plantcare.model.Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new com.example.plantcare.exception.ResourceNotFoundException("Khong tim thay bai dang"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("POST_NOT_FOUND", "Không tìm thấy bài đăng!"));
 
         boolean newVisibility = !post.isVisible();
         post.setVisible(newVisibility);

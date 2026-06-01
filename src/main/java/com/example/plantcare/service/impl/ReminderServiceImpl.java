@@ -27,12 +27,12 @@ public class ReminderServiceImpl implements ReminderService {
 
     private User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Tài khoản không tồn tại!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("USER_NOT_FOUND", "Tài khoản không tồn tại!"));
     }
 
     private Plant getMyPlantById(Long plantId, User owner) {
         Plant plant = plantRepository.findById(plantId)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy cây!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("PLANT_NOT_FOUND", "Không tìm thấy cây!"));
         if (!plant.getGarden().getUser().getId().equals(owner.getId())) {
             throw new com.example.plantcare.exception.AppException("FORBIDDEN_PLANT_ACCESS", "Bạn không có quyền truy cập cây này!");
         }
@@ -41,7 +41,7 @@ public class ReminderServiceImpl implements ReminderService {
 
     private Reminder getMyReminderById(Long reminderId, User owner) {
         Reminder reminder = reminderRepository.findById(reminderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy báo thức!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("REMINDER_NOT_FOUND", "Không tìm thấy báo thức!"));
         if (!reminder.getPlant().getGarden().getUser().getId().equals(owner.getId())) {
             throw new com.example.plantcare.exception.AppException("FORBIDDEN_EDIT_REMINDER", "Bạn không có quyền sửa báo thức này!");
         }

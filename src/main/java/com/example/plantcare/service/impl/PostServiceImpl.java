@@ -29,7 +29,7 @@ public class PostServiceImpl implements PostService {
 
     private User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Tài khoản không tồn tại!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("USER_NOT_FOUND", "Tài khoản không tồn tại!"));
     }
 
     private PostResponse mapToResponse(Post post, String currentUserEmail) {
@@ -96,7 +96,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostResponse getPostById(Long postId, String currentUserEmail) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy bài viết!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("POST_NOT_FOUND", "Không tìm thấy bài viết!"));
         if (!post.isVisible()) {
             throw new com.example.plantcare.exception.AppException("POST_HIDDEN", "Bài viết đã bị ẩn!");
         }
@@ -107,7 +107,7 @@ public class PostServiceImpl implements PostService {
     public PostResponse updatePost(Long postId, PostRequest request, String email) {
         User author = getUserByEmail(email);
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy bài viết!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("POST_NOT_FOUND", "Không tìm thấy bài viết!"));
 
         if (!post.getAuthor().getId().equals(author.getId())) {
             throw new com.example.plantcare.exception.AppException("FORBIDDEN_EDIT_POST", "Bạn không có quyền sửa bài viết của người khác!");
@@ -131,7 +131,7 @@ public class PostServiceImpl implements PostService {
     public void deletePost(Long postId, String email) {
         User author = getUserByEmail(email);
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy bài viết!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("POST_NOT_FOUND", "Không tìm thấy bài viết!"));
 
         if (!post.getAuthor().getId().equals(author.getId())) {
             throw new com.example.plantcare.exception.AppException("FORBIDDEN_DELETE_POST", "Bạn không có quyền xóa bài viết của người khác!");

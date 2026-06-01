@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +34,7 @@ public class CareTipController {
     }
 
     @Operation(summary = "Đăng cẩm nang mới", description = "CHỈ ADMIN (Nếu User bình thường gọi sẽ bị lỗi)")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<CareTipResponse> createCareTip(
             @RequestBody CareTipRequest request,
@@ -41,6 +43,7 @@ public class CareTipController {
     }
 
     @Operation(summary = "Sửa bài cẩm nang", description = "CHỈ ADMIN")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<CareTipResponse> updateCareTip(
             @PathVariable Long id,
@@ -50,6 +53,7 @@ public class CareTipController {
     }
 
     @Operation(summary = "Xóa bài cẩm nang", description = "CHỈ ADMIN")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCareTip(
             @PathVariable Long id,

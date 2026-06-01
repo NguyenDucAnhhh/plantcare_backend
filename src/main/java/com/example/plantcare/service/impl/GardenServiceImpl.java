@@ -23,12 +23,12 @@ public class GardenServiceImpl implements GardenService {
 
     private User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Tài khoản không tồn tại!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("USER_NOT_FOUND", "Tài khoản không tồn tại!"));
     }
 
     private Garden getMyGardenById(Long gardenId, User owner) {
         Garden garden = gardenRepository.findById(gardenId)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy khu vườn này!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("GARDEN_NOT_FOUND", "Không tìm thấy khu vườn này!"));
         
         if (!garden.getUser().getId().equals(owner.getId())) {
             throw new com.example.plantcare.exception.AppException("FORBIDDEN_GARDEN_ACCESS", "Bạn không có quyền thao tác trên khu vườn của người khác!");

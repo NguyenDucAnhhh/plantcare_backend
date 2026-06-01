@@ -36,7 +36,7 @@ public class PostController {
             }
             return ResponseEntity.ok(imageUrls);
         } catch (Exception e) {
-            throw new RuntimeException("Loi upload anh bai viet: " + e.getMessage());
+            throw new RuntimeException("Loi upload anh bai viet: !" + e.getMessage());
         }
     }
 

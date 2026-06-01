@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
 
     private User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Tài khoản không tồn tại!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("USER_NOT_FOUND", "Tài khoản không tồn tại!"));
     }
 
     @Override
@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserProfileResponse getUserProfileById(Long userId, String currentUserEmail) {
         User targetUser = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("USER_NOT_FOUND", "Tài khoản không tồn tại!"));
         UserProfileResponse response = UserProfileResponse.fromEntity(targetUser);
         response.setFollowersCount(userRepository.countFollowers(targetUser.getId()));
         
@@ -96,7 +96,7 @@ public class UserServiceImpl implements UserService {
             response.setFollowersCount(userRepository.countFollowers(user.getId()));
             return response;
         } catch (IOException e) {
-            throw new com.example.plantcare.exception.AppException("UPLOAD_AVATAR_FAILED", "Lỗi khi upload ảnh đại diện: " + e.getMessage());
+            throw new com.example.plantcare.exception.AppException("UPLOAD_AVATAR_FAILED", "Lỗi khi upload ảnh đại diện: !" + e.getMessage());
         }
     }
 
@@ -105,7 +105,7 @@ public class UserServiceImpl implements UserService {
     public boolean toggleFollow(Long targetUserId, String email) {
         User currentUser = getUserByEmail(email);
         User targetUser = userRepository.findById(targetUserId)
-                .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("USER_NOT_FOUND", "Tài khoản không tồn tại!"));
 
         if (currentUser.getId().equals(targetUser.getId())) {
             throw new com.example.plantcare.exception.AppException("USER_CANNOT_FOLLOW_SELF", "Bạn không thể tự theo dõi chính mình!");

@@ -63,7 +63,7 @@ public class AuthServiceImpl implements AuthService {
         );
         
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy User"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("USER_NOT_FOUND", "Tài khoản không tồn tại!"));
                 
         String jwtToken = jwtService.generateToken(user);
         return AuthResponse.builder()
@@ -77,7 +77,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void forgotPassword(ForgotPasswordRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("USER_NOT_FOUND", "Tài khoản không tồn tại!"));
         
         String otp = String.format("%06d", new Random().nextInt(999999));
         user.setResetOtpCode(otp);
@@ -90,7 +90,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public boolean verifyOtp(VerifyOtpRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("USER_NOT_FOUND", "Tài khoản không tồn tại!"));
         
         if (user.getResetOtpCode() == null || !user.getResetOtpCode().equals(request.getOtp())) {
             throw new com.example.plantcare.exception.AppException("AUTH_INVALID_OTP", "Mã OTP không hợp lệ!");
@@ -106,7 +106,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void resetPassword(ResetPasswordRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("USER_NOT_FOUND", "Tài khoản không tồn tại!"));
                 
         if (user.getResetOtpCode() == null || !user.getResetOtpCode().equals(request.getOtp())) {
             throw new com.example.plantcare.exception.AppException("AUTH_INVALID_OTP", "Mã OTP không hợp lệ!");

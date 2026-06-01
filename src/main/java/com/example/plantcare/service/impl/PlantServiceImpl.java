@@ -27,12 +27,12 @@ public class PlantServiceImpl implements PlantService {
 
     private User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Tài khoản không tồn tại!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("USER_NOT_FOUND", "Tài khoản không tồn tại!"));
     }
 
     private Garden getMyGardenById(Long gardenId, User owner) {
         Garden garden = gardenRepository.findById(gardenId)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy khu vườn!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("GARDEN_NOT_FOUND", "Không tìm thấy khu vườn!"));
         if (!garden.getUser().getId().equals(owner.getId())) {
             throw new com.example.plantcare.exception.AppException("FORBIDDEN_GARDEN_ACCESS", "Bạn không có quyền truy cập khu vườn này!");
         }
@@ -41,7 +41,7 @@ public class PlantServiceImpl implements PlantService {
 
     private Plant getMyPlantById(Long plantId, User owner) {
         Plant plant = plantRepository.findById(plantId)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy cây!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("PLANT_NOT_FOUND", "Không tìm thấy cây!"));
         if (!plant.getGarden().getUser().getId().equals(owner.getId())) {
             throw new com.example.plantcare.exception.AppException("FORBIDDEN_PLANT_ACCESS", "Bạn không có quyền thao tác với cây này!");
         }

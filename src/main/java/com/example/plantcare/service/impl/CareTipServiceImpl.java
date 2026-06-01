@@ -4,10 +4,7 @@ import com.example.plantcare.dto.request.CareTipRequest;
 import com.example.plantcare.dto.response.CareTipResponse;
 import com.example.plantcare.exception.ResourceNotFoundException;
 import com.example.plantcare.model.CareTip;
-import com.example.plantcare.model.Role;
-import com.example.plantcare.model.User;
 import com.example.plantcare.repository.CareTipRepository;
-import com.example.plantcare.repository.UserRepository;
 import com.example.plantcare.service.CareTipService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -18,23 +15,12 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 @Service
 @RequiredArgsConstructor
 public class CareTipServiceImpl implements CareTipService {
 
     private final CareTipRepository careTipRepository;
-    private final UserRepository userRepository;
-
-    private User getAdminByEmail(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Tài khoản không tồn tại!"));
-        if (user.getRole() != Role.ADMIN) {
-            throw new com.example.plantcare.exception.AppException("FORBIDDEN_ADMIN_ONLY", "Chỉ ADMIN mới có quyền thực hiện hành động này!");
-        }
-        return user;
-    }
 
     @Override
     public List<CareTipResponse> getAllCareTips() {
@@ -52,13 +38,12 @@ public class CareTipServiceImpl implements CareTipService {
     @Override
     public CareTipResponse getCareTipById(Long id) {
         CareTip tip = careTipRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy mẹo!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("TIP_NOT_FOUND", "Không tìm thấy mẹo chăm sóc!"));
         return CareTipResponse.fromEntity(tip);
     }
 
     @Override
     public CareTipResponse createCareTip(CareTipRequest request, String email) {
-        getAdminByEmail(email); // Validate Admin
 
         CareTip newTip = CareTip.builder()
                 .title(request.getTitle())
@@ -72,10 +57,9 @@ public class CareTipServiceImpl implements CareTipService {
 
     @Override
     public CareTipResponse updateCareTip(Long id, CareTipRequest request, String email) {
-        getAdminByEmail(email); // Validate Admin
 
         CareTip tip = careTipRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy mẹo!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("TIP_NOT_FOUND", "Không tìm thấy mẹo chăm sóc!"));
 
         if (request.getTitle() != null) tip.setTitle(request.getTitle());
         if (request.getContent() != null) tip.setContent(request.getContent());
@@ -87,10 +71,8 @@ public class CareTipServiceImpl implements CareTipService {
 
     @Override
     public void deleteCareTip(Long id, String email) {
-        getAdminByEmail(email); // Validate Admin
         CareTip tip = careTipRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy mẹo!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("TIP_NOT_FOUND", "Không tìm thấy mẹo chăm sóc!"));
         careTipRepository.delete(tip);
     }
 }
-

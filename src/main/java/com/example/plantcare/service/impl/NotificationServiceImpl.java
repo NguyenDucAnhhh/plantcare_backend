@@ -22,7 +22,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     private User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Tài khoản không tồn tại!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("USER_NOT_FOUND", "Tài khoản không tồn tại!"));
     }
 
     @Override
@@ -37,7 +37,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void markAsRead(Long notificationId, String email) {
         User user = getUserByEmail(email);
         Notification notif = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new ResourceNotFoundException("Thông báo không tồn tại!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("NOTIFICATION_NOT_FOUND", "Thông báo không tồn tại!"));
 
         if (!notif.getRecipient().getId().equals(user.getId())) {
             throw new com.example.plantcare.exception.AppException("FORBIDDEN_NOTIFICATION_ACCESS", "Bạn không có quyền thao tác thông báo này!");

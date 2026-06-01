@@ -31,9 +31,9 @@ public class LikeServiceImpl implements LikeService {
     @Override
     public boolean toggleLike(Long postId, String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Tài khoản không tồn tại!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("USER_NOT_FOUND", "Tài khoản không tồn tại!"));
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Bài viết không tồn tại!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("POST_NOT_FOUND", "Bài viết không tồn tại!"));
 
         // Tìm xem user này đã thả tim bài này chưa (Yêu cầu repo có hàm findByUserAndPost)
         Optional<LikeAction> existingLike = likeActionRepository.findByUserAndPost(user, post);

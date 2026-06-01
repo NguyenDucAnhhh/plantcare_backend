@@ -31,7 +31,7 @@ public class GardenController {
             String imageUrl = cloudinaryService.uploadImage(file, "gardens");
             return ResponseEntity.ok(imageUrl);
         } catch (Exception e) {
-            throw new RuntimeException("Lỗi upload ảnh vườn: " + e.getMessage());
+            throw new RuntimeException("Lỗi upload ảnh vườn: !" + e.getMessage());
         }
     }
 
