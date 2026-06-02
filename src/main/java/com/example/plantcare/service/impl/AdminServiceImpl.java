@@ -92,6 +92,7 @@ public class AdminServiceImpl implements AdminService {
                 .postImageUrls(ticket.getPost().getImageUrls() != null ? new ArrayList<>(ticket.getPost().getImageUrls()) : new ArrayList<>())
                 .postLikeCount(ticket.getPost().getLikeCount())
                 .postCommentCount(ticket.getPost().getComments() != null ? ticket.getPost().getComments().size() : 0)
+                .postIsVisible(ticket.getPost().isVisible())
                 .postCreatedAt(ticket.getPost().getCreatedAt())
                 .build());
     }

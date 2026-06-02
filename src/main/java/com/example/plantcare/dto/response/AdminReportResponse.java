@@ -29,5 +29,6 @@ public class AdminReportResponse {
     private List<String> postImageUrls;
     private int postLikeCount;
     private int postCommentCount;
+    private boolean postIsVisible;
     private LocalDateTime postCreatedAt;
 }
