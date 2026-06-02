@@ -101,16 +101,30 @@ public class AdminServiceImpl implements AdminService {
     public void resolveReport(Long reportId, String action) {
         com.example.plantcare.model.ReportTicket ticket = reportTicketRepository.findById(reportId)
                 .orElseThrow(() -> new AppException("REPORT_NOT_FOUND", "Phiếu báo cáo không tồn tại!"));
+                
+        boolean newVisibility;
+        String newStatus;
+
         if ("DELETE_POST".equalsIgnoreCase(action)) {
-            ticket.setStatus("DELETED");
-            ticket.getPost().setVisible(false);
-            postRepository.save(ticket.getPost());
+            newStatus = "DELETED";
+            newVisibility = false;
         } else if ("KEEP_POST".equalsIgnoreCase(action) || "RESTORE_POST".equalsIgnoreCase(action)) {
-            ticket.setStatus("KEPT");
-            ticket.getPost().setVisible(true);
-            postRepository.save(ticket.getPost());
+            newStatus = "KEPT";
+            newVisibility = true;
+        } else {
+            return;
         }
-        reportTicketRepository.save(ticket);
+
+        ticket.getPost().setVisible(newVisibility);
+        postRepository.save(ticket.getPost());
+
+        List<ReportTicket> tickets = reportTicketRepository.findByPostId(ticket.getPost().getId());
+        if (tickets != null && !tickets.isEmpty()) {
+            for (ReportTicket t : tickets) {
+                t.setStatus(newStatus);
+                reportTicketRepository.save(t);
+            }
+        }
     }
 
     @Override
