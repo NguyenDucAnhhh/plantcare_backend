@@ -40,6 +40,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateFcmToken(String email, String fcmToken) {
+        if (fcmToken != null && !fcmToken.isBlank()) {
+            java.util.List<User> otherUsers = userRepository.findByFcmToken(fcmToken);
+            for (User other : otherUsers) {
+                if (!other.getEmail().equals(email)) {
+                    other.setFcmToken("");
+                    userRepository.save(other);
+                }
+            }
+        }
         User user = getUserByEmail(email);
         user.setFcmToken(fcmToken);
         userRepository.save(user);

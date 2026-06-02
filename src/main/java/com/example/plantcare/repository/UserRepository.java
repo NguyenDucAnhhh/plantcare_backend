@@ -14,6 +14,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // Câu lệnh SQL tàng hình: SELECT * FROM Users WHERE email = ?
     Optional<User> findByEmail(String email);
 
+    List<User> findByFcmToken(String fcmToken);
+
     @Query("SELECT COUNT(u) FROM User u JOIN u.following f WHERE f.id = :userId")
     int countFollowers(@Param("userId") Long userId);
 

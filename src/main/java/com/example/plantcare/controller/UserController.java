@@ -89,7 +89,7 @@ public class UserController {
             @RequestBody java.util.Map<String, String> body,
             Authentication authentication) {
         String fcmToken = body.get("fcmToken");
-        if (fcmToken != null && !fcmToken.isBlank()) {
+        if (fcmToken != null) {
             userService.updateFcmToken(authentication.getName(), fcmToken);
         }
         return ResponseEntity.ok().build();
