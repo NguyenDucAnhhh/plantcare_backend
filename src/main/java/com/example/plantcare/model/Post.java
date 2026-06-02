@@ -45,7 +45,7 @@ public class Post {
     @Column(nullable = false)
     private boolean isVisible = true;
 
-    // Một bài viết có hàng ngàn Bình luận chạy theo
+    // Một bài đăng có hàng ngàn Bình luận chạy theo
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<Comment> comments = new ArrayList<>();

@@ -96,9 +96,9 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostResponse getPostById(Long postId, String currentUserEmail) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new com.example.plantcare.exception.AppException("POST_NOT_FOUND", "Không tìm thấy bài viết!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("POST_NOT_FOUND", "Không tìm thấy bài đăng!"));
         if (!post.isVisible()) {
-            throw new com.example.plantcare.exception.AppException("POST_HIDDEN", "Bài viết đã bị ẩn!");
+            throw new com.example.plantcare.exception.AppException("POST_HIDDEN", "Bài đăng đã bị ẩn!");
         }
         return mapToResponse(post, currentUserEmail);
     }
@@ -107,10 +107,10 @@ public class PostServiceImpl implements PostService {
     public PostResponse updatePost(Long postId, PostRequest request, String email) {
         User author = getUserByEmail(email);
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new com.example.plantcare.exception.AppException("POST_NOT_FOUND", "Không tìm thấy bài viết!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("POST_NOT_FOUND", "Không tìm thấy bài đăng!"));
 
         if (!post.getAuthor().getId().equals(author.getId())) {
-            throw new com.example.plantcare.exception.AppException("FORBIDDEN_EDIT_POST", "Bạn không có quyền sửa bài viết của người khác!");
+            throw new com.example.plantcare.exception.AppException("FORBIDDEN_EDIT_POST", "Bạn không có quyền sửa bài đăng của người khác!");
         }
 
         if (request.getContent() != null) post.setContent(request.getContent());
@@ -131,10 +131,10 @@ public class PostServiceImpl implements PostService {
     public void deletePost(Long postId, String email) {
         User author = getUserByEmail(email);
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new com.example.plantcare.exception.AppException("POST_NOT_FOUND", "Không tìm thấy bài viết!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("POST_NOT_FOUND", "Không tìm thấy bài đăng!"));
 
         if (!post.getAuthor().getId().equals(author.getId())) {
-            throw new com.example.plantcare.exception.AppException("FORBIDDEN_DELETE_POST", "Bạn không có quyền xóa bài viết của người khác!");
+            throw new com.example.plantcare.exception.AppException("FORBIDDEN_DELETE_POST", "Bạn không có quyền xóa bài đăng của người khác!");
         }
 
         if (reportTicketRepository.existsByPost(post)) {

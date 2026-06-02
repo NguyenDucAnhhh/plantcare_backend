@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/posts/{postId}/comments")
 @RequiredArgsConstructor
-@Tag(name = "6. Khu Vực Bình Luận", description = "Đánh giá, thảo luận trên bài viết")
+@Tag(name = "6. Khu Vực Bình Luận", description = "Đánh giá, thảo luận trên bài đăng")
 public class CommentController {
 
     private final CommentService commentService;
@@ -29,7 +29,7 @@ public class CommentController {
         return ResponseEntity.ok(commentService.addComment(postId, request, authentication.getName()));
     }
 
-    @Operation(summary = "Lấy toàn bộ bình luận của 1 bài viết")
+    @Operation(summary = "Lấy toàn bộ bình luận của 1 bài đăng")
     @GetMapping
     public ResponseEntity<List<CommentResponse>> getCommentsByPost(@PathVariable Long postId, Authentication authentication) {
         String email = authentication != null ? authentication.getName() : null;

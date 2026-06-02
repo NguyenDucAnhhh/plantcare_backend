@@ -33,7 +33,7 @@ public class LikeServiceImpl implements LikeService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new com.example.plantcare.exception.AppException("USER_NOT_FOUND", "Tài khoản không tồn tại!"));
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new com.example.plantcare.exception.AppException("POST_NOT_FOUND", "Bài viết không tồn tại!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("POST_NOT_FOUND", "Bài đăng không tồn tại!"));
 
         // Tìm xem user này đã thả tim bài này chưa (Yêu cầu repo có hàm findByUserAndPost)
         Optional<LikeAction> existingLike = likeActionRepository.findByUserAndPost(user, post);
@@ -54,8 +54,8 @@ public class LikeServiceImpl implements LikeService {
 
             User postAuthor = post.getAuthor();
             if (!postAuthor.getId().equals(user.getId())) {
-                String title = "Có người thích bài viết của bạn!";
-                String body = user.getFullName() + " vừa thả tim bài viết của bạn.";
+                String title = "Có người thích bài đăng của bạn!";
+                String body = user.getFullName() + " vừa thả tim bài đăng của bạn.";
                 
                 Notification notif = Notification.builder()
                         .title(title)

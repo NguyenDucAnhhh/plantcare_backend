@@ -30,7 +30,7 @@ public class ReportTicketServiceImpl implements ReportTicketService {
         User reporter = userRepository.findByEmail(email)
                 .orElseThrow(() -> new com.example.plantcare.exception.AppException("USER_NOT_FOUND", "Tài khoản không tồn tại!"));
         Post post = postRepository.findById(request.getPostId())
-                .orElseThrow(() -> new com.example.plantcare.exception.AppException("POST_NOT_FOUND", "Bài viết không tồn tại!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("POST_NOT_FOUND", "Bài đăng không tồn tại!"));
 
         ReportTicket ticket = ReportTicket.builder()
                 .reporter(reporter)

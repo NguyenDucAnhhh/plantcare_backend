@@ -42,7 +42,7 @@ public class CommentServiceImpl implements CommentService {
     public CommentResponse addComment(Long postId, CommentRequest request, String email) {
         User author = getUserByEmail(email);
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new com.example.plantcare.exception.AppException("POST_NOT_FOUND", "Bài viết không tồn tại!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("POST_NOT_FOUND", "Bài đăng không tồn tại!"));
 
         Comment parentComment = null;
         if (request.getParentCommentId() != null) {
@@ -66,7 +66,7 @@ public class CommentServiceImpl implements CommentService {
         // 1. Thong bao cho chu bai dang
         User postAuthor = post.getAuthor();
         if (!notifiedUserIds.contains(postAuthor.getId())) {
-            String title = "Bình luận mới trên bài viết của bạn!";
+            String title = "Bình luận mới trên bài đăng của bạn!";
             String body = author.getFullName() + " đã bình luận: " + request.getContent();
             
             Notification notif = Notification.builder()
@@ -111,7 +111,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<CommentResponse> getCommentsByPost(Long postId, String currentUserEmail) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new com.example.plantcare.exception.AppException("POST_NOT_FOUND", "Bài viết không tồn tại!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("POST_NOT_FOUND", "Bài đăng không tồn tại!"));
 
         return post.getComments().stream()
                 .map(c -> CommentResponse.fromEntity(c, currentUserEmail))
@@ -124,7 +124,7 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new com.example.plantcare.exception.AppException("COMMENT_NOT_FOUND", "Bình luận không tồn tại!"));
 
-        // Chỉ tác giả bài viết hoặc tác giả bình luận mới được xóa
+        // Chỉ tác giả bài đăng hoặc tác giả bình luận mới được xóa
         if (!comment.getAuthor().getId().equals(author.getId()) && !comment.getPost().getAuthor().getId().equals(author.getId())) {
             throw new com.example.plantcare.exception.AppException("FORBIDDEN_DELETE_COMMENT", "Bạn không có quyền xóa bình luận này!");
         }

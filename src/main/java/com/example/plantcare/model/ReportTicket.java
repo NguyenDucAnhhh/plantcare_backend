@@ -23,7 +23,7 @@ public class ReportTicket {
     @ToString.Exclude
     private User reporter;
 
-    // Bài viết xấu số có hình đồi trụy bị nhắm mục tiêu
+    // Bài đăng xấu số có hình đồi trụy bị nhắm mục tiêu
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
     @ToString.Exclude

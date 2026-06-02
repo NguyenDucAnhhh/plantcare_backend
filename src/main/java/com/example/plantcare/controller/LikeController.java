@@ -23,9 +23,9 @@ public class LikeController {
             Authentication authentication) {
         boolean isLiked = likeService.toggleLike(postId, authentication.getName());
         if (isLiked) {
-            return ResponseEntity.ok("Đã THẢ TIM bài viết!");
+            return ResponseEntity.ok("Đã THẢ TIM bài đăng!");
         } else {
-            return ResponseEntity.ok("Đã HỦY TIM bài viết!");
+            return ResponseEntity.ok("Đã HỦY TIM bài đăng!");
         }
     }
 }
