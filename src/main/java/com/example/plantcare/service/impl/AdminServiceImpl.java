@@ -62,6 +62,9 @@ public class AdminServiceImpl implements AdminService {
     public void toggleUserStatus(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException("USER_NOT_FOUND", "Tài khoản không tồn tại!"));
+        if ("admin@plantcare.com".equals(user.getEmail())) {
+            throw new AppException("FORBIDDEN", "Không thể khóa tài khoản quản trị viên gốc!");
+        }
         user.setActive(!user.isActive());
         userRepository.save(user);
     }
@@ -70,6 +73,9 @@ public class AdminServiceImpl implements AdminService {
     public void changeUserRole(Long userId, String newRole) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException("USER_NOT_FOUND", "Tài khoản không tồn tại!"));
+        if ("admin@plantcare.com".equals(user.getEmail())) {
+            throw new AppException("FORBIDDEN", "Không thể thay đổi quyền của quản trị viên gốc!");
+        }
         user.setRole(Role.valueOf(newRole.toUpperCase()));
         userRepository.save(user);
     }

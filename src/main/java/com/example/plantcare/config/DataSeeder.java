@@ -16,8 +16,8 @@ public class DataSeeder {
         return args -> {
             String adminEmail = "admin@plantcare.com";
             
-            // Kiểm tra xem database đã có tài khoản admin này chưa, nếu chưa thì tạo mới
-            if (userRepository.findByEmail(adminEmail).isEmpty()) {
+            java.util.Optional<User> optionalAdmin = userRepository.findByEmail(adminEmail);
+            if (optionalAdmin.isEmpty()) {
                 User admin = User.builder()
                         .email(adminEmail)
                         .password(passwordEncoder.encode("123456"))
@@ -36,6 +36,21 @@ public class DataSeeder {
                 System.out.println("   Tài khoản: " + adminEmail);
                 System.out.println("   Mật khẩu: 123456");
                 System.out.println("==========================================================");
+            } else {
+                User admin = optionalAdmin.get();
+                boolean needsUpdate = false;
+                if (!admin.isActive()) {
+                    admin.setActive(true);
+                    needsUpdate = true;
+                }
+                if (admin.getRole() != Role.ADMIN) {
+                    admin.setRole(Role.ADMIN);
+                    needsUpdate = true;
+                }
+                if (needsUpdate) {
+                    userRepository.save(admin);
+                    System.out.println("✅ Đã tự động khôi phục quyền cho tài khoản Admin mặc định.");
+                }
             }
         };
     }
