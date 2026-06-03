@@ -3,14 +3,12 @@ package com.example.plantcare.controller;
 import com.example.plantcare.dto.request.GardenRequest;
 import com.example.plantcare.dto.response.GardenResponse;
 import com.example.plantcare.service.GardenService;
-import com.example.plantcare.service.CloudinaryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -21,19 +19,8 @@ import java.util.List;
 public class GardenController {
 
     private final GardenService gardenService;
-    private final CloudinaryService cloudinaryService;
 
-    @Operation(summary = "Upload ảnh cho vườn")
-    @PostMapping(value = "/image/upload", consumes = "multipart/form-data")
-    public ResponseEntity<String> uploadGardenImage(
-            @RequestParam("file") MultipartFile file) {
-        try {
-            String imageUrl = cloudinaryService.uploadImage(file, "gardens");
-            return ResponseEntity.ok(imageUrl);
-        } catch (Exception e) {
-            throw new RuntimeException("Lỗi upload ảnh vườn: !" + e.getMessage());
-        }
-    }
+
 
     @Operation(summary = "Tạo vườn mới", description = "Bắt buộc có Token")
     @PostMapping

@@ -9,8 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import com.example.plantcare.service.CloudinaryService;
 
 import java.util.List;
 
@@ -21,19 +19,6 @@ import java.util.List;
 public class PlantController {
 
     private final PlantService plantService;
-    private final CloudinaryService cloudinaryService;
-
-    @Operation(summary = "Upload ảnh cho cây")
-    @PostMapping(value = "/plants/image/upload", consumes = "multipart/form-data")
-    public ResponseEntity<String> uploadPlantImage(
-            @RequestParam("file") MultipartFile file) {
-        try {
-            String imageUrl = cloudinaryService.uploadImage(file, "plants");
-            return ResponseEntity.ok(imageUrl);
-        } catch (Exception e) {
-            throw new RuntimeException("Lỗi upload ảnh cây: !" + e.getMessage());
-        }
-    }
 
     @PostMapping("/gardens/{gardenId}/plants")
     public ResponseEntity<PlantResponse> addPlantToGarden(

@@ -9,9 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import com.example.plantcare.service.CloudinaryService;
-import java.util.ArrayList;
 
 import java.util.List;
 
@@ -22,23 +19,6 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
-    private final CloudinaryService cloudinaryService;
-
-    @Operation(summary = "Upload anh cho bai viet", description = "Upload nhieu anh len Cloudinary va tra ve danh sach link anh")
-    @PostMapping(value = "/images/upload", consumes = "multipart/form-data")
-    public ResponseEntity<List<String>> uploadPostImages(
-            @RequestParam("files") List<MultipartFile> files) {
-        try {
-            List<String> imageUrls = new ArrayList<>();
-            for (MultipartFile file : files) {
-                String imageUrl = cloudinaryService.uploadImage(file, "posts");
-                imageUrls.add(imageUrl);
-            }
-            return ResponseEntity.ok(imageUrls);
-        } catch (Exception e) {
-            throw new RuntimeException("Loi upload anh bai viet: !" + e.getMessage());
-        }
-    }
 
     @Operation(summary = "Dang bai viet moi")
     @PostMapping
