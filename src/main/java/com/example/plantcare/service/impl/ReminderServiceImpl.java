@@ -57,7 +57,6 @@ public class ReminderServiceImpl implements ReminderService {
                 .triggerTime(request.getTriggerTime())
                 .lastPerformed(request.getLastPerformed())
                 .repeatDays(request.getRepeatDays())
-                .isActive(true) // Luôn bật khi mới tạo
                 .plant(plant)
                 .build();
 

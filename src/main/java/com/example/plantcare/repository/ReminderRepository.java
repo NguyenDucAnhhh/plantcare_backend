@@ -9,5 +9,5 @@ import java.time.LocalTime;
 public interface ReminderRepository extends JpaRepository<Reminder, Long> {
     List<Reminder> findByPlant(Plant plant);
     List<Reminder> findByPlant_Garden_Id(Long gardenId);
-    List<Reminder> findByTriggerTimeAndIsActiveTrue(LocalTime time);
+    List<Reminder> findByTriggerTime(LocalTime time);
 }

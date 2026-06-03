@@ -25,7 +25,7 @@ public class ReminderSchedulerService {
         LocalTime now = LocalTime.now();
         LocalTime currentMinute = LocalTime.of(now.getHour(),
                 now.getMinute());
-        List<Reminder> dueReminders = reminderRepository.findByTriggerTimeAndIsActiveTrue(currentMinute);
+        List<Reminder> dueReminders = reminderRepository.findByTriggerTime(currentMinute);
         for (Reminder reminder : dueReminders) {
             com.example.plantcare.dto.response.ReminderResponse responseDTO = com.example.plantcare.dto.response.ReminderResponse.fromEntity(reminder);
             if (responseDTO.getNextExecution() != null && responseDTO.getNextExecution().toLocalDate().equals(LocalDate.now())) {
@@ -38,23 +38,28 @@ public class ReminderSchedulerService {
                     case "PRUNING": title = "Đã đến giờ cắt tỉa!"; break;
                 }
                 String body = "Hãy chăm sóc cho cây " + reminder.getPlant().getName() + " của bạn nhé.";
-                firebasePushService.sendPushNotification(
-                        reminder.getPlant().getGarden().getUser(),
-                        NotificationType.REMINDER,
-                        title,
-                        body
-                );
                 
-                // Save IN-APP Notification to Database
-                Notification notif = Notification.builder()
-                        .recipient(reminder.getPlant().getGarden().getUser())
-                        .title(title)
-                        .message(body)
-                        .type("REMINDER")
-                        .targetId(reminder.getId())
-                        .isRead(false)
-                        .build();
-                notificationRepository.save(notif);
+                // Kiểm tra cài đặt thông báo toàn cục của User trước khi lưu in-app notification
+                com.example.plantcare.model.User user = reminder.getPlant().getGarden().getUser();
+                if (user.isNotifyAll() && user.isNotifyReminder()) {
+                    firebasePushService.sendPushNotification(
+                            user,
+                            NotificationType.REMINDER,
+                            title,
+                            body
+                    );
+                    
+                    // Save IN-APP Notification to Database
+                    Notification notif = Notification.builder()
+                            .recipient(user)
+                            .title(title)
+                            .message(body)
+                            .type("REMINDER")
+                            .targetId(reminder.getId())
+                            .isRead(false)
+                            .build();
+                    notificationRepository.save(notif);
+                }
                 
                 log.info("Sent reminder for plant: {}", reminder.getPlant().getName());
             }
