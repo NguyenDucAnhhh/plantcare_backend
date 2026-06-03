@@ -3,7 +3,6 @@ package com.example.plantcare.service.impl;
 import com.example.plantcare.dto.request.ChangePasswordRequest;
 import com.example.plantcare.dto.request.NotificationSettingsRequest;
 import com.example.plantcare.dto.response.UserProfileResponse;
-import com.example.plantcare.exception.ResourceNotFoundException;
 import com.example.plantcare.model.NotificationType;
 import com.example.plantcare.model.User;
 import com.example.plantcare.model.Notification;
@@ -171,7 +170,15 @@ public class UserServiceImpl implements UserService {
         user.setNotifySystem(request.isNotifySystem());
         
         if (request.getFcmToken() != null && !request.getFcmToken().trim().isEmpty()) {
-            user.setFcmToken(request.getFcmToken());
+            String fcmToken = request.getFcmToken();
+            java.util.List<User> otherUsers = userRepository.findByFcmToken(fcmToken);
+            for (User other : otherUsers) {
+                if (!other.getEmail().equals(email)) {
+                    other.setFcmToken("");
+                    userRepository.save(other);
+                }
+            }
+            user.setFcmToken(fcmToken);
         }
 
         user = userRepository.save(user);

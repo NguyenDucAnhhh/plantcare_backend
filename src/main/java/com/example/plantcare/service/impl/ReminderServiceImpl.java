@@ -2,7 +2,6 @@ package com.example.plantcare.service.impl;
 
 import com.example.plantcare.dto.request.ReminderRequest;
 import com.example.plantcare.dto.response.ReminderResponse;
-import com.example.plantcare.exception.ResourceNotFoundException;
 import com.example.plantcare.model.Plant;
 import com.example.plantcare.model.Reminder;
 import com.example.plantcare.model.ReminderType;
@@ -96,17 +95,6 @@ public class ReminderServiceImpl implements ReminderService {
         if (request.getRepeatDays() != null) reminder.setRepeatDays(request.getRepeatDays());
         if (request.getLastPerformed() != null) reminder.setLastPerformed(request.getLastPerformed());
 
-        return ReminderResponse.fromEntity(reminderRepository.save(reminder));
-    }
-
-    @Override
-    public ReminderResponse toggleReminderStatus(Long reminderId, String email) {
-        User owner = getUserByEmail(email);
-        Reminder reminder = getMyReminderById(reminderId, owner);
-
-        // Bật/tắt công tắc
-        reminder.setActive(!reminder.isActive());
-        
         return ReminderResponse.fromEntity(reminderRepository.save(reminder));
     }
 

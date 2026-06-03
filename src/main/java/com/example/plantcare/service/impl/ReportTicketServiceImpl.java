@@ -2,10 +2,8 @@ package com.example.plantcare.service.impl;
 
 import com.example.plantcare.dto.request.ReportTicketRequest;
 import com.example.plantcare.dto.response.ReportTicketResponse;
-import com.example.plantcare.exception.ResourceNotFoundException;
 import com.example.plantcare.model.Post;
 import com.example.plantcare.model.ReportTicket;
-import com.example.plantcare.model.Role;
 import com.example.plantcare.model.User;
 import com.example.plantcare.repository.PostRepository;
 import com.example.plantcare.repository.ReportTicketRepository;
@@ -14,8 +12,6 @@ import com.example.plantcare.service.ReportTicketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

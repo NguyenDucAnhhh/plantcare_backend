@@ -1,6 +1,5 @@
 package com.example.plantcare.service.impl;
 
-import com.example.plantcare.exception.ResourceNotFoundException;
 import com.example.plantcare.model.LikeAction;
 import com.example.plantcare.model.Post;
 import com.example.plantcare.model.User;

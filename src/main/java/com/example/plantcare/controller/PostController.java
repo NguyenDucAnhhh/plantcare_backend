@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/posts")
 @RequiredArgsConstructor
-@Tag(name = "5. Khong Gian Cong Dong", description = "Quan ly Bai viet (Mang xa hoi)")
+@Tag(name = "Cộng đồng bài đăng", description = "Quan ly Bai viet (Mang xa hoi)")
 public class PostController {
 
     private final PostService postService;

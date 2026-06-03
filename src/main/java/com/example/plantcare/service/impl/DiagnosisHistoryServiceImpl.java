@@ -4,7 +4,6 @@ import com.example.plantcare.dto.request.DiagnosisEvaluateRequest;
 import com.example.plantcare.dto.request.DiagnosisHistoryRequest;
 import com.example.plantcare.dto.request.DiagnosisRateRequest;
 import com.example.plantcare.dto.response.DiagnosisHistoryResponse;
-import com.example.plantcare.exception.ResourceNotFoundException;
 import com.example.plantcare.model.DiagnosisHistory;
 import com.example.plantcare.model.User;
 import com.example.plantcare.repository.DiagnosisHistoryRepository;

@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/posts/{postId}/comments")
 @RequiredArgsConstructor
-@Tag(name = "6. Khu Vực Bình Luận", description = "Đánh giá, thảo luận trên bài đăng")
+@Tag(name = "Bình Luận", description = "Đánh giá, thảo luận trên bài đăng")
 public class CommentController {
 
     private final CommentService commentService;

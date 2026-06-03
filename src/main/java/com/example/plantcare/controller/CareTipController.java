@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/care-tips")
 @RequiredArgsConstructor
-@Tag(name = "11. Cẩm Nang Chăm Sóc (ADMIN)", description = "Quản trị viên đăng bài chia sẻ kiến thức")
+@Tag(name = "Mẹo Chăm Sóc (ADMIN)", description = "Quản trị viên đăng bài chia sẻ kiến thức")
 public class CareTipController {
 
     private final CareTipService careTipService;

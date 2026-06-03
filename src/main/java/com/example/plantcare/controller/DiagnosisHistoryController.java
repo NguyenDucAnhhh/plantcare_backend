@@ -6,7 +6,6 @@ import com.example.plantcare.dto.response.DiagnosisHistoryResponse;
 import com.example.plantcare.service.CloudinaryService;
 import com.example.plantcare.service.DiagnosisHistoryService;
 import com.example.plantcare.service.GeminiService;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +24,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 @RestController
 @RequestMapping("/api/diagnosis")
 @RequiredArgsConstructor
-@Tag(name = "10. Phòng Khám Trí Tuệ Nhân Tạo (AI)", description = "AI Diagnosis")
+@Tag(name = "Chẩn đoán Trí Tuệ Nhân Tạo (AI)", description = "AI Diagnosis")
 public class DiagnosisHistoryController {
 
     private static final Logger log = LoggerFactory.getLogger(DiagnosisHistoryController.class);

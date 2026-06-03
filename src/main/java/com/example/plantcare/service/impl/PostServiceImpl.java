@@ -2,7 +2,6 @@ package com.example.plantcare.service.impl;
 
 import com.example.plantcare.dto.request.PostRequest;
 import com.example.plantcare.dto.response.PostResponse;
-import com.example.plantcare.exception.ResourceNotFoundException;
 import com.example.plantcare.model.Post;
 import com.example.plantcare.model.User;
 import com.example.plantcare.repository.PostRepository;
@@ -13,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;

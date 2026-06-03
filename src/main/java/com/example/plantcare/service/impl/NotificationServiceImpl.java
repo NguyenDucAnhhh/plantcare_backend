@@ -1,7 +1,6 @@
 package com.example.plantcare.service.impl;
 
 import com.example.plantcare.dto.response.NotificationResponse;
-import com.example.plantcare.exception.ResourceNotFoundException;
 import com.example.plantcare.model.Notification;
 import com.example.plantcare.model.User;
 import com.example.plantcare.repository.NotificationRepository;

@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-@Tag(name = "4. Quản Lý Báo Thức", description = "Đặt lịch chăm sóc (tưới nước, bón phân) cho Cây")
+@Tag(name = "Quản Lý Báo Thức", description = "Đặt lịch chăm sóc (tưới nước, bón phân) cho Cây")
 public class ReminderController {
 
     private final ReminderService reminderService;
@@ -54,13 +54,6 @@ public class ReminderController {
         return ResponseEntity.ok(reminderService.updateReminder(reminderId, request, authentication.getName()));
     }
 
-    @Operation(summary = "Bật / Tắt trạng thái báo thức")
-    @PatchMapping("/reminders/{reminderId}/toggle")
-    public ResponseEntity<ReminderResponse> toggleReminderStatus(
-            @PathVariable Long reminderId,
-            Authentication authentication) {
-        return ResponseEntity.ok(reminderService.toggleReminderStatus(reminderId, authentication.getName()));
-    }
 
     @Operation(summary = "Xóa vĩnh viễn báo thức")
     @DeleteMapping("/reminders/{reminderId}")

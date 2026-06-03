@@ -13,7 +13,6 @@ import com.example.plantcare.model.User;
 import com.example.plantcare.model.Role;
 import com.example.plantcare.model.ReportTicket;
 import com.example.plantcare.exception.AppException;
-import com.example.plantcare.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
@@ -21,7 +20,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 import org.springframework.data.domain.Sort;
 
 @Service

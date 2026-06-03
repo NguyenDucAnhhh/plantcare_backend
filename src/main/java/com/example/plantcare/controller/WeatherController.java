@@ -15,7 +15,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/weather")
 @RequiredArgsConstructor
-@Tag(name = "Weather", description = "Các API liên quan đến thông tin thời tiết")
+@Tag(name = "Thời tiết", description = "Các API liên quan đến thông tin thời tiết")
 public class WeatherController {
 
     private final WeatherService weatherService;

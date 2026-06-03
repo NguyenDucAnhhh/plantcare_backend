@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/reports")
 @RequiredArgsConstructor
-@Tag(name = "5. Khong Gian Cong Dong", description = "Quan ly Bai viet (Mang xa hoi)")
+@Tag(name = "Tố cáo bài đăng", description = "Quan ly Bai viet")
 public class ReportTicketController {
 
     private final ReportTicketService reportTicketService;

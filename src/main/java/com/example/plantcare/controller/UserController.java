@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-@Tag(name = "8. Cư Dân Làng Cây", description = "Quản lý Hồ sơ cá nhân và Bạn bè")
+@Tag(name = "Quản lý người dùng", description = "Quản lý Hồ sơ cá nhân và Bạn bè")
 public class UserController {
 
     private final UserService userService;

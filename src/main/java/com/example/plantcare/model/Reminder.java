@@ -33,11 +33,6 @@ public class Reminder {
     @Column(nullable = false)
     private String repeatDays;
 
-    // Cái công tắc Nút gạt màu xanh (Toggle) trong App. 
-    // Tắt công tắc thì Server tự hiểu không gửi thông báo Push nữa.
-    @Column(nullable = false)
-    private boolean isActive = true;
-
     @Column(nullable = true)
     private LocalDateTime lastPerformed;
 

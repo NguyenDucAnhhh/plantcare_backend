@@ -2,7 +2,6 @@ package com.example.plantcare.service.impl;
 
 import com.example.plantcare.dto.request.CareTipRequest;
 import com.example.plantcare.dto.response.CareTipResponse;
-import com.example.plantcare.exception.ResourceNotFoundException;
 import com.example.plantcare.model.CareTip;
 import com.example.plantcare.repository.CareTipRepository;
 import com.example.plantcare.service.CareTipService;
