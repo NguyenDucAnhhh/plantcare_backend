@@ -2,6 +2,7 @@ package com.example.plantcare.controller;
 
 import com.example.plantcare.dto.request.PostRequest;
 import com.example.plantcare.dto.response.PostResponse;
+import com.example.plantcare.service.LikeService;
 import com.example.plantcare.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -19,6 +21,7 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
+    private final LikeService likeService;
 
     @Operation(summary = "Dang bai viet moi")
     @PostMapping
@@ -85,4 +88,18 @@ public class PostController {
         postService.deletePost(postId, authentication.getName());
         return ResponseEntity.ok("Xoa bai viet thanh cong!");
     }
+
+    @Operation(summary = "Thả tim / Hủy thả tim", description = "Bấm lần 1 là Thả tim, bấm lần 2 là Hủy tim")
+    @PostMapping("/{postId}/like")
+    public ResponseEntity<String> toggleLike(
+            @PathVariable Long postId,
+            Authentication authentication) {
+        boolean isLiked = likeService.toggleLike(postId, authentication.getName());
+        if (isLiked) {
+            return ResponseEntity.ok("Đã THẢ TIM bài đăng!");
+        } else {
+            return ResponseEntity.ok("Đã HỦY TIM bài đăng!");
+        }
+    }
+
 }

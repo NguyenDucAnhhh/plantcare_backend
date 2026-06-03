@@ -36,13 +36,5 @@ public class CommentController {
         return ResponseEntity.ok(commentService.getCommentsByPost(postId, email));
     }
 
-    @Operation(summary = "Xóa bình luận")
-    @DeleteMapping("/{commentId}")
-    public ResponseEntity<String> deleteComment(
-            @PathVariable Long postId, // Chữ postId ở đây chỉ để đúng URL pattern
-            @PathVariable Long commentId,
-            Authentication authentication) {
-        commentService.deleteComment(commentId, authentication.getName());
-        return ResponseEntity.ok("Xóa bình luận thành công!");
-    }
+
 }

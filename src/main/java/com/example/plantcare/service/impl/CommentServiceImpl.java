@@ -118,18 +118,4 @@ public class CommentServiceImpl implements CommentService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public void deleteComment(Long commentId, String email) {
-        User author = getUserByEmail(email);
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new com.example.plantcare.exception.AppException("COMMENT_NOT_FOUND", "Bình luận không tồn tại!"));
-
-        // Chỉ tác giả bài đăng hoặc tác giả bình luận mới được xóa
-        if (!comment.getAuthor().getId().equals(author.getId()) && !comment.getPost().getAuthor().getId().equals(author.getId())) {
-            throw new com.example.plantcare.exception.AppException("FORBIDDEN_DELETE_COMMENT", "Bạn không có quyền xóa bình luận này!");
-        }
-
-        commentRepository.delete(comment);
-    }
 }
-
