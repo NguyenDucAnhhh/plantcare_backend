@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import com.example.plantcare.dto.request.ForgotPasswordRequest;
 import com.example.plantcare.dto.request.VerifyOtpRequest;
 import com.example.plantcare.dto.request.ResetPasswordRequest;
-import com.example.plantcare.service.EmailService;
+
 import java.util.Random;
 import java.time.LocalDateTime;
 
@@ -28,7 +28,6 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-    private final EmailService emailService;
 
     @Override
     public AuthResponse register(RegisterRequest request) {
@@ -84,7 +83,6 @@ public class AuthServiceImpl implements AuthService {
         user.setOtpExpiration(LocalDateTime.now().plusMinutes(10));
         userRepository.save(user);
 
-        emailService.sendOtpEmail(user.getEmail(), otp);
     }
 
     @Override
