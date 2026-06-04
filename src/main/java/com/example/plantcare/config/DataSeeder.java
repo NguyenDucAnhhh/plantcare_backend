@@ -3,11 +3,13 @@ package com.example.plantcare.config;
 import com.example.plantcare.model.Role;
 import com.example.plantcare.model.User;
 import com.example.plantcare.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+@Slf4j
 @Configuration
 public class DataSeeder {
 
@@ -31,11 +33,9 @@ public class DataSeeder {
                         .build();
                         
                 userRepository.save(admin);
-                System.out.println("==========================================================");
-                System.out.println("✅ Đã tự động tạo tài khoản Admin mặc định:");
-                System.out.println("   Tài khoản: " + adminEmail);
-                System.out.println("   Mật khẩu: 123456");
-                System.out.println("==========================================================");
+                log.info("Đã tự động tạo tài khoản Admin mặc định:");
+                log.info("Tài khoản: {}", adminEmail);
+                log.info("Mật khẩu: 123456");
             } else {
                 User admin = optionalAdmin.get();
                 boolean needsUpdate = false;
@@ -49,7 +49,7 @@ public class DataSeeder {
                 }
                 if (needsUpdate) {
                     userRepository.save(admin);
-                    System.out.println("✅ Đã tự động khôi phục quyền cho tài khoản Admin mặc định.");
+                    log.info("Đã tự động khôi phục quyền cho tài khoản Admin mặc định.");
                 }
             }
         };

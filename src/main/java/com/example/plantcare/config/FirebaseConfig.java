@@ -3,6 +3,7 @@ package com.example.plantcare.config;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,6 +18,7 @@ import java.io.InputStream;
  * - Khoi tao FirebaseApp - "Canh cong" de Spring Boot noi vao he thong Firebase.
  * - Chi khoi tao 1 lan, tranh loi "FirebaseApp da ton tai".
  */
+@Slf4j
 @Configuration
 public class FirebaseConfig {
 
@@ -33,7 +35,7 @@ public class FirebaseConfig {
                 if (serviceAccountPath.startsWith("/") || serviceAccountPath.contains(":\\")) {
                     java.io.File file = new java.io.File(serviceAccountPath);
                     if (!file.exists()) {
-                        System.out.println("[WARN] Firebase: Khong tim thay file " + serviceAccountPath + ". Push Notification se bi tat.");
+                        log.warn("Firebase: Không tìm thấy file {}. Push Notification sẽ bị tắt.", serviceAccountPath);
                         return;
                     }
                     serviceAccount = new java.io.FileInputStream(file);
@@ -43,7 +45,7 @@ public class FirebaseConfig {
                 }
 
                 if (serviceAccount == null) {
-                    System.out.println("[WARN] Firebase: Khong tim thay file " + serviceAccountPath + " trong resources. Push Notification se bi tat.");
+                    log.warn("Firebase: Không tìm thấy file {} trong resources. Push Notification sẽ bị tắt.", serviceAccountPath);
                     return;
                 }
 
@@ -52,10 +54,10 @@ public class FirebaseConfig {
                         .build();
 
                 FirebaseApp.initializeApp(options);
-                System.out.println("[INFO] Firebase da ket noi thanh cong!");
+                log.info("Firebase đã kết nối thành công!");
             }
         } catch (Exception e) {
-            System.err.println("[ERROR] Firebase khoi tao that bai: " + e.getMessage());
+            log.error("Firebase khởi tạo thất bại: {}", e.getMessage(), e);
         }
     }
 }
