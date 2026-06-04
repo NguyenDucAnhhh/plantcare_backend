@@ -28,6 +28,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final com.example.plantcare.service.EmailService emailService;
 
     @Override
     public AuthResponse register(RegisterRequest request) {
@@ -83,6 +84,8 @@ public class AuthServiceImpl implements AuthService {
         user.setOtpExpiration(LocalDateTime.now().plusMinutes(10));
         userRepository.save(user);
 
+        // Gọi EmailService để gửi OTP
+        emailService.sendOtpEmail(user.getEmail(), otp);
     }
 
     @Override

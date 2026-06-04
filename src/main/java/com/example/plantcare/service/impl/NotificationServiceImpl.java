@@ -35,15 +35,13 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void markAsRead(Long notificationId, String email) {
         User user = getUserByEmail(email);
-        Notification notif = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new com.example.plantcare.exception.AppException("NOTIFICATION_NOT_FOUND", "Thông báo không tồn tại!"));
-
-        if (!notif.getRecipient().getId().equals(user.getId())) {
-            throw new com.example.plantcare.exception.AppException("FORBIDDEN_NOTIFICATION_ACCESS", "Bạn không có quyền thao tác thông báo này!");
-        }
-
-        notif.setRead(true);
-        notificationRepository.save(notif);
+        notificationRepository.findById(notificationId)
+                .filter(n -> n.getRecipient().getId().equals(user.getId()))
+                .filter(n -> !n.isRead())
+                .ifPresent(notif -> {
+                    notif.setRead(true);
+                    notificationRepository.save(notif);
+                });
     }
 
     @Override

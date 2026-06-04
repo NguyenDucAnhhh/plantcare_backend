@@ -61,12 +61,9 @@ public class DiagnosisHistoryServiceImpl implements DiagnosisHistoryService {
     @Override
     public DiagnosisHistoryResponse rateDiagnosis(Long id, DiagnosisRateRequest request, String email) {
         DiagnosisHistory history = diagnosisHistoryRepository.findById(id)
-                .orElseThrow(() -> new com.example.plantcare.exception.AppException("DIAGNOSIS_NOT_FOUND", "Không tìm thấy kết quả chẩn đoán này!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("DIAGNOSIS_NOT_FOUND", "Kết quả chẩn đoán không tồn tại!"));
         
-        if (!history.getUser().getEmail().equals(email)) {
-            throw new com.example.plantcare.exception.AppException("FORBIDDEN_RATE_DIAGNOSIS", "Bạn không có quyền đánh giá chẩn đoán này!");
-        }
-        
+
         history.setUserFeedbackRating(request.getRating());
         return DiagnosisHistoryResponse.fromEntity(diagnosisHistoryRepository.save(history));
     }
@@ -74,7 +71,7 @@ public class DiagnosisHistoryServiceImpl implements DiagnosisHistoryService {
     @Override
     public DiagnosisHistoryResponse evaluateDiagnosis(Long id, DiagnosisEvaluateRequest request) {
         DiagnosisHistory history = diagnosisHistoryRepository.findById(id)
-                .orElseThrow(() -> new com.example.plantcare.exception.AppException("DIAGNOSIS_NOT_FOUND", "Không tìm thấy kết quả chẩn đoán này!"));
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("DIAGNOSIS_NOT_FOUND", "Kết quả chẩn đoán không tồn tại!"));
         
         history.setAdminIsCorrect(request.getIsCorrect());
         history.setAdminNote(request.getAdminNote());
