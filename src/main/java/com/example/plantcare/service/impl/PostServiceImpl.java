@@ -30,6 +30,15 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(() -> new com.example.plantcare.exception.AppException("USER_NOT_FOUND", "Tài khoản không tồn tại!"));
     }
 
+    private Post getMyPostById(Long postId, User owner) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("POST_NOT_FOUND", "Không tìm thấy bài đăng!"));
+        if (!post.getAuthor().getId().equals(owner.getId())) {
+            throw new com.example.plantcare.exception.AppException("FORBIDDEN_POST_ACCESS", "Bạn không có quyền thao tác với bài đăng này!");
+        }
+        return post;
+    }
+
     private PostResponse mapToResponse(Post post, String currentUserEmail) {
         PostResponse response = PostResponse.fromEntity(post);
         if (currentUserEmail != null) {
@@ -56,7 +65,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostResponse> getAllVisiblePosts(int page, int size, String currentUserEmail) {
-        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size);
         return postRepository.findByIsVisibleTrueOrderByCreatedAtDesc(pageable).stream()
                 .map(post -> mapToResponse(post, currentUserEmail))
                 .collect(Collectors.toList());
@@ -104,12 +113,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostResponse updatePost(Long postId, PostRequest request, String email) {
         User author = getUserByEmail(email);
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new com.example.plantcare.exception.AppException("POST_NOT_FOUND", "Không tìm thấy bài đăng!"));
-
-        if (!post.getAuthor().getId().equals(author.getId())) {
-            throw new com.example.plantcare.exception.AppException("FORBIDDEN_EDIT_POST", "Bạn không có quyền sửa bài đăng của người khác!");
-        }
+        Post post = getMyPostById(postId, author);
 
         if (request.getContent() != null) post.setContent(request.getContent());
         if (request.getImageUrls() != null) post.setImageUrls(request.getImageUrls());
@@ -128,12 +132,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public void deletePost(Long postId, String email) {
         User author = getUserByEmail(email);
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new com.example.plantcare.exception.AppException("POST_NOT_FOUND", "Không tìm thấy bài đăng!"));
-
-        if (!post.getAuthor().getId().equals(author.getId())) {
-            throw new com.example.plantcare.exception.AppException("FORBIDDEN_DELETE_POST", "Bạn không có quyền xóa bài đăng của người khác!");
-        }
+        Post post = getMyPostById(postId, author);
 
         if (reportTicketRepository.existsByPost(post)) {
             post.setVisible(false);
@@ -144,4 +143,3 @@ public class PostServiceImpl implements PostService {
         }
     }
 }
-

@@ -15,9 +15,9 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Plant Care API (Enterprise)")
+                        .title("Plant Care API")
                         .version("1.0")
-                        .description("Tài liệu Kỹ thuật Tích hợp API chuẩn Đa Tầng. Hỗ trợ Test trực tiếp không cần Postman."))
+                        .description("Tài liệu Kỹ thuật Tích hợp API chuẩn Đa Tầng."))
                 .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
                 .components(new Components().addSecuritySchemes("Bearer Authentication", createAPIKeyScheme()));
     }

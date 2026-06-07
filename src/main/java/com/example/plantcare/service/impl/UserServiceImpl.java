@@ -122,9 +122,9 @@ public class UserServiceImpl implements UserService {
         boolean isAlreadyFollowing = currentUser.getFollowing().contains(targetUser);
 
         if (isAlreadyFollowing) {
-            currentUser.getFollowing().remove(targetUser); // H?y Follow
+            currentUser.getFollowing().remove(targetUser); // Hủy Follow
         } else {
-            currentUser.getFollowing().add(targetUser); // B?m Follow
+            currentUser.getFollowing().add(targetUser); // Bấm Follow
             String title = "Có người theo dõi mới";
             String body = currentUser.getFullName() + " đã bắt đầu theo dõi bạn.";
             

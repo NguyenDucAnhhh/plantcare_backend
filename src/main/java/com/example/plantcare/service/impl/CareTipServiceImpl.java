@@ -34,10 +34,14 @@ public class CareTipServiceImpl implements CareTipService {
         return careTipRepository.findAll(pageable).map(CareTipResponse::fromEntity);
     }
 
+    private CareTip getTipById(Long id) {
+        return careTipRepository.findById(id)
+                .orElseThrow(() -> new com.example.plantcare.exception.AppException("TIP_NOT_FOUND", "Không tìm thấy mẹo chăm sóc!"));
+    }
+
     @Override
     public CareTipResponse getCareTipById(Long id) {
-        CareTip tip = careTipRepository.findById(id)
-                .orElseThrow(() -> new com.example.plantcare.exception.AppException("TIP_NOT_FOUND", "Không tìm thấy mẹo chăm sóc!"));
+        CareTip tip = getTipById(id);
         return CareTipResponse.fromEntity(tip);
     }
 
@@ -57,8 +61,7 @@ public class CareTipServiceImpl implements CareTipService {
     @Override
     public CareTipResponse updateCareTip(Long id, CareTipRequest request, String email) {
 
-        CareTip tip = careTipRepository.findById(id)
-                .orElseThrow(() -> new com.example.plantcare.exception.AppException("TIP_NOT_FOUND", "Không tìm thấy mẹo chăm sóc!"));
+        CareTip tip = getTipById(id);
 
         if (request.getTitle() != null) tip.setTitle(request.getTitle());
         if (request.getContent() != null) tip.setContent(request.getContent());
@@ -70,8 +73,8 @@ public class CareTipServiceImpl implements CareTipService {
 
     @Override
     public void deleteCareTip(Long id, String email) {
-        CareTip tip = careTipRepository.findById(id)
-                .orElseThrow(() -> new com.example.plantcare.exception.AppException("TIP_NOT_FOUND", "Không tìm thấy mẹo chăm sóc!"));
+        CareTip tip = getTipById(id);
         careTipRepository.delete(tip);
     }
 }
+

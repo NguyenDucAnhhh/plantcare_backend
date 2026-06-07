@@ -30,6 +30,10 @@ public class CareTip {
     @Column
     private String category;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
+    private User author;
+
     private LocalDateTime createdAt;
 
     @PrePersist
