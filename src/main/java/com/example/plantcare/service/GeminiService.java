@@ -86,9 +86,7 @@ public class GeminiService {
 
             return (String) firstPart.get("text");
 
-//        } catch (Exception e) {
-//            return "Khong the phan tich anh luc nay. Vui long thu lai sau.";
-//        }
+
         }catch (Exception e) {
         log.error("[Gemini] Loi goi API: {}", e.getMessage());
         // PHẢI TRẢ VỀ JSON ĐỂ CONTROLLER KHÔNG BỊ CRASH
