@@ -53,7 +53,8 @@ public class GeminiService {
                 "Chuỗi JSON phải có chính xác các khóa (keys) sau: 'plantName', 'diseaseName', 'cause', 'treatment', 'confidence'. " +
                 "Nếu hình ảnh không phải là thực vật, hãy trả về 'Unknown' cho 'plantName' và giải thích lý do trong 'diseaseName'. " +
                 "Nếu cây hoàn toàn khỏe mạnh, hãy điền 'None' hoặc 'Healthy' vào 'diseaseName'. Phần 'treatment' (cách chữa trị) cần rõ ràng và súc tích. " +
-                "Lưu ý: Đối với 'confidence', hãy trả về một con số từ 0 đến 100 (ví dụ: 85.0). Đối với 'cause', hãy nêu ngắn gọn nguyên nhân gây bệnh.";
+                "Lưu ý: Đối với 'confidence', hãy trả về một con số từ 0 đến 100 (ví dụ: 85.0). Đối với 'cause', hãy nêu ngắn gọn nguyên nhân gây bệnh."+
+                "QUAN TRỌNG TUYỆT ĐỐI: Toàn bộ nội dung bên trong các giá trị 'plantName', 'diseaseName', 'cause', 'treatment' BẮT BUỘC PHẢI ĐƯỢC VIỆT HÓA 100% BẰNG TIẾNG VIỆT RÕ RÀNG, DỄ HIỂU.";
 
         Map<String, Object> requestBody = Map.of(
                 "contents", List.of(Map.of(
